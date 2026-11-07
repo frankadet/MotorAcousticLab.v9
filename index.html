@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#eef3f9">
+<title>Motor Acoustic Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--ink:#eef3f9;--panel:#ffffff;--panel2:#f5f8fc;--line:#dde5ee;--line2:#c5d0dc;--bone:#142030;--muted:#556473;--dim:#8794a3;--accent:#2563eb;--accent2:#1d4ed8;--amber:#d97706;--ok:#0f9f6e;--bad:#dc2626;
+ --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--shadow:0 1px 2px rgba(16,32,48,.05),0 10px 28px rgba(16,32,48,.07)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:linear-gradient(180deg,#f6f9fd 0%,#e7eef7 100%) fixed;color:var(--bone);font:400 1rem/1.55 var(--body)}
+main{max-width:920px;margin:0 auto;padding:60px 18px 48px}
+h1,h2,h3{font-family:var(--disp);font-weight:700;line-height:1.05;margin:0;letter-spacing:.005em}
+h1{font-size:clamp(2.3rem,7vw,3.5rem)}h2{font-size:clamp(1.7rem,4.6vw,2.2rem);margin-bottom:.45rem}h3{font-size:1.35rem;margin:1.5rem 0 .55rem}
+p{margin:.5rem 0}.muted{color:var(--muted)}.small{font-size:.88rem}section.hidden{display:none}.off{display:none!important}
+.brand{display:flex;align-items:center;gap:14px}.mark{width:46px;height:46px;flex:none}
+.lede{color:var(--muted);max-width:56ch;margin:.8rem 0 0}
+.disclaimer{display:flex;gap:9px;align-items:flex-start;color:#a35a00;font-size:.9rem;margin:.9rem 0 1.5rem;max-width:60ch}
+.disclaimer::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--amber);margin-top:.5em;flex:none}
+.steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0;margin:0 0 6px}
+.steps li{border-top:4px solid var(--line2);border-radius:2px;padding-top:7px;font-size:.86rem;color:var(--dim)}
+.steps li.done{border-color:rgba(37,99,235,.45);color:var(--muted)}.steps li.on{border-color:var(--accent);color:var(--bone);font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,4vw,30px);margin:16px 0;box-shadow:var(--shadow)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 16px;margin:18px 0 8px}
+.field label{display:block;color:var(--muted);font-size:.86rem;font-weight:500;margin-bottom:6px}
+input,select{width:100%;padding:12px 13px;background:#fff;color:var(--bone);border:1px solid var(--line2);border-radius:10px;font:inherit;transition:border-color .15s,box-shadow .15s}
+input::placeholder{color:var(--dim)}select:invalid{color:var(--dim)}option{color:var(--bone);background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+.field .msg{display:none;color:#b42318;font-size:.82rem;margin-top:5px}.field.err .msg{display:block}.field.err input,.field.err select{border-color:var(--bad)}
+button{font:700 1rem var(--body);cursor:pointer;border:0;border-radius:12px;padding:13px 22px;margin:12px 10px 0 0;color:#fff;background:var(--accent);box-shadow:0 2px 6px rgba(37,99,235,.28);transition:filter .15s,transform .08s}
+button:hover{filter:brightness(1.07)}button:active{transform:translateY(1px)}button:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+button.secondary{background:#fff;color:var(--bone);box-shadow:inset 0 0 0 1px var(--line2)}button.secondary:hover{box-shadow:inset 0 0 0 1px var(--muted)}
+.notice{padding:12px 14px;border-radius:10px;background:#fff6e5;border-left:4px solid var(--amber);color:#6b4100}
+.safe{padding:12px 14px;border-radius:10px;background:#e8f7f0;border-left:4px solid var(--ok);color:#0b5a3f}
+.vchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}.vchips span{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:3px 13px;font-size:.88rem;color:var(--muted)}
+.placement{display:grid;grid-template-columns:minmax(220px,1fr) minmax(220px,1fr);gap:22px;align-items:center;margin-top:14px}
+.placement svg{width:100%;height:auto;background:#0f1418;border:1px solid var(--line);border-radius:12px}
+.placement ol{padding-left:1.2rem}.placement li{margin:.3rem 0}
+#test{display:none}
+#test.active{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;gap:10px;padding:56px clamp(14px,4vw,40px) 26px;overflow:auto;background:linear-gradient(180deg,#f6f9fd,#e1eaf5)}
+#test.active>*:first-child{margin-top:auto}#test.active>*:last-child{margin-bottom:auto}
+.phasehead{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.dots{display:flex;gap:6px;width:min(420px,86vw)}.dots i{flex:1;height:6px;border-radius:3px;background:var(--line2)}.dots i.done{background:rgba(37,99,235,.45)}.dots i.active{background:var(--accent)}
+.counter{color:var(--muted);font-size:.92rem}
+.phase{font-size:clamp(2.1rem,8vw,3.6rem);margin:0}.desc{color:var(--muted);max-width:52ch;margin:0}
+.status{font-weight:700;color:var(--amber);min-height:1.5em}.status.recording{color:var(--bad)}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.12}}.blink{animation:blink 1s steps(1) infinite}
+.instr{display:grid;grid-template-columns:1fr;gap:16px;width:100%;max-width:560px;justify-items:center}
+.tachbox{width:100%;text-align:center}
+.gaugewrap{position:relative;width:min(400px,92vw);margin:0 auto}
+#tach{width:100%;aspect-ratio:300/230;height:auto;display:block}
+.count{position:absolute;left:50%;top:80%;transform:translate(-50%,-50%);font:700 clamp(3rem,15vw,4.8rem)/1 var(--disp);color:var(--amber);animation:blink 1s steps(1) infinite;pointer-events:none}
+.tachread{font:700 clamp(2.3rem,9vw,3.1rem)/1 var(--disp);font-variant-numeric:tabular-nums;margin-top:2px}.tachread.over{color:var(--bad)}.tachread.dim{color:var(--dim)}
+.tachnote{font-size:.85rem;color:var(--muted);min-height:1.3em;max-width:34ch;margin:4px auto 0}
+.side{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.timerrow{display:flex;align-items:center;justify-content:center;gap:16px}
+.timer{font:700 clamp(2.8rem,10vw,4.2rem)/1 var(--disp);font-variant-numeric:tabular-nums}
+.onflag{display:inline-flex;align-items:center;gap:8px;font:700 1.5rem/1 var(--disp);color:#fff;background:var(--ok);border-radius:8px;padding:7px 14px;animation:blink .8s steps(1) infinite}
+.onflag i{width:10px;height:10px;border-radius:50%;background:#fff}
+.progress{height:8px;width:100%;max-width:420px;background:var(--line2);border-radius:4px;overflow:hidden;flex:none}.bar{height:100%;width:0;background:var(--accent)}
+.pill{color:var(--muted);font-size:.88rem}
+.meterbox{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.meterhead{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;color:var(--muted);font-weight:500;margin-bottom:6px}
+#dbread{font-variant-numeric:tabular-nums;color:var(--bone);font-weight:700}
+#vu{width:100%;height:44px;display:block}#spec{width:100%;height:70px;display:block;margin-top:8px}
+.noiseflag{min-height:1.4em;margin-top:6px;font-size:.88rem;font-weight:700;color:var(--muted)}.noiseflag.warn{color:#b45309}.noiseflag.clip{color:var(--bad)}
+.fullnote{max-width:56ch;font-size:.84rem;color:var(--dim);margin:6px 0 0}
+@media(min-width:880px){.instr{max-width:960px;grid-template-columns:minmax(0,430px) minmax(0,1fr);align-items:center;text-align:left}.side{align-items:stretch}.timerrow{justify-content:flex-start}.progress{max-width:none}.pill{text-align:left}}
+.exitbtn{position:fixed;top:12px;right:12px;z-index:100;margin:0;padding:8px 14px;font-size:.88rem;background:#fff;color:#b42318;box-shadow:inset 0 0 0 1px rgba(220,38,38,.45),0 2px 8px rgba(16,32,48,.12)}
+.bye{position:fixed;inset:0;z-index:60;background:linear-gradient(180deg,#f6f9fd,#e1eaf5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:6px}
+.verdict{border-left:6px solid var(--line2);background:var(--panel2);border-radius:10px;padding:16px 18px;margin:12px 0 18px}
+.verdict .vt{font:700 clamp(1.7rem,5vw,2.3rem)/1.05 var(--disp)}.verdict p{margin:.4rem 0 0}.verdict .vm{margin-top:.6rem;font-size:.86rem;color:var(--muted)}
+.verdict.ok{border-color:var(--ok);background:#e8f7f0}.verdict.ok .vt{color:#0b7a55}.verdict.warn{border-color:var(--amber);background:#fff6e5}.verdict.warn .vt{color:#a35a00}.verdict.bad{border-color:var(--bad);background:#fdecec}.verdict.bad .vt{color:#b42318}.verdict.nc{border-color:var(--accent);background:#e9f0fe}.verdict.nc .vt{color:var(--accent2)}
+.idle{display:grid;grid-template-columns:auto 1fr;gap:10px 30px;align-items:end;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 6px;background:var(--panel2)}
+.idle .big{font:700 clamp(3.2rem,12vw,4.6rem)/.9 var(--disp);color:var(--accent);font-variant-numeric:tabular-nums}.idle .big small{display:block;font:500 .95rem var(--body);color:var(--muted);margin-top:6px}
+.idle dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px 16px;margin:0}.idle dt{color:var(--dim);font-size:.82rem}.idle dd{margin:0;font:700 1.45rem/1.1 var(--disp)}
+.idle .idlenote{grid-column:1/-1;margin:6px 0 0;color:var(--muted);font-size:.9rem}
+.fnd{border-left:4px solid var(--line2);padding:6px 0 6px 14px;margin:12px 0}.fnd b{display:block;font-size:1.05rem}.fnd .sev{margin-right:8px}
+.fnd:has(.sev.bad){border-color:var(--bad)}.fnd:has(.sev.warn){border-color:var(--amber)}
+.sev{display:inline-block;font-size:.76rem;font-weight:700;padding:1px 9px;border-radius:99px;vertical-align:1px}.sev.bad{background:var(--bad);color:#fff}.sev.warn{background:#f59e0b;color:#3b2300}.sev.info{background:#e3eaf2;color:#334155}
+.tablewrap{overflow-x:auto}.stats{width:100%;border-collapse:collapse;font-size:.92rem;margin:10px 0}
+.stats th,.stats td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}.stats th{color:var(--muted);font-weight:500;font-size:.84rem}
+.stats .bad{color:#b45309;font-weight:700}.stats td small{display:block;color:var(--dim)}
+details{margin:16px 0}summary{cursor:pointer;font-weight:700}details p{color:var(--muted);font-size:.92rem}
+@media(max-width:650px){main{padding:56px 14px 40px}.placement{grid-template-columns:1fr}.idle{grid-template-columns:1fr}.steps li{font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){.blink,.count,.onflag{animation:none}}
+.ver{position:fixed;right:10px;bottom:6px;z-index:120;font:500 .7rem/1 var(--body);color:var(--dim);opacity:.8;pointer-events:none;letter-spacing:.02em}
+.calibbtns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.calibbtns button{margin:6px 0 0}
+</style>
+</head>
+<body>
+<button id="exitBtn" class="exitbtn" type="button" aria-label="Salir del programa">✕ Salir</button>
+<main>
+  <header>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#ffffff" stroke="#c5d0dc" stroke-width="2"/><path d="M9 33A17 17 0 0 1 39 33" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/><path d="M24 26L33 14" stroke="#ea580c" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="26" r="3.2" fill="#142030"/></svg>
+      <h1>Motor Acoustic Lab</h1>
+    </div>
+    <p class="lede">Escucha el motor con el micrófono del móvil y comprueba si suena como debe. Seis fases con el coche parado, hasta 2.000 RPM: 20 segundos cada una (5 en la aceleración).</p>
+    <p class="disclaimer">Análisis acústico orientativo. No sustituye a un mecánico.</p>
+    <ol class="steps" id="steps"><li>Vehículo</li><li>Preparación</li><li>Prueba</li><li>Resultado</li></ol>
+  </header>
+  <section id="setup" class="card">
+    <h2>Datos del vehículo</h2>
+    <p class="muted">Todos los campos son obligatorios. El análisis los usa para interpretar el sonido: con el número de cilindros se calcula el régimen exacto a partir del ritmo de los disparos.</p>
+    <form id="vform" novalidate>
+      <div class="fields">
+        <div class="field"><label for="make">Marca</label><input id="make" required autocomplete="off" placeholder="Ej. SEAT"><div class="msg"></div></div>
+        <div class="field"><label for="model">Modelo</label><input id="model" required autocomplete="off" placeholder="Ej. León"><div class="msg"></div></div>
+        <div class="field"><label for="year">Año</label><input id="year" required inputmode="numeric" autocomplete="off" placeholder="Ej. 2018"><div class="msg"></div></div>
+        <div class="field"><label for="engine">Motor / código</label><input id="engine" required autocomplete="off" placeholder="Ej. 2.0 TDI"><div class="msg"></div></div>
+        <div class="field"><label for="fuel">Combustible</label><select id="fuel" required><option value="" selected disabled>Elige…</option><option>Gasolina</option><option>Diésel</option><option>Híbrido</option><option>Otro</option></select><div class="msg"></div></div>
+        <div class="field"><label for="cyl">Cilindros</label><select id="cyl" required><option value="" selected disabled>Elige…</option><option>3</option><option>4</option><option>5</option><option>6</option></select><div class="msg"></div></div>
+        <div class="field"><label for="km">Kilometraje</label><input id="km" required inputmode="numeric" autocomplete="off" placeholder="Ej. 125000"><div class="msg"></div></div>
+      </div>
+      <button id="toPrep" type="submit">Continuar a preparación</button>
+    </form>
+  </section>
+
+  <section id="prep" class="card hidden">
+    <h2>Coloca el móvil</h2>
+    <div id="vchips" class="vchips"></div>
+    <p class="notice"><strong>La grabación todavía NO ha comenzado.</strong> Primero se mide el ruido ambiente 6 segundos con el motor APAGADO; después te pedirá arrancar el motor. La voz solo se usa en la primera fase (ralentí), durante la cual el programa aprende el sonido de tu motor; en las demás fases sigue el texto de la pantalla y el cuentarrevoluciones. Cada fase se graba tras una cuenta atrás (3 segundos en el ralentí, 10 en las demás) y dura 20 segundos (5 en la aceleración).</p>
+    <div class="placement">
+      <div>
+        <svg viewBox="0 0 470 315" role="img" aria-label="Ilustración de un teléfono sujeto al parabrisas desde el interior del vehículo">
+          <rect x="8" y="8" width="454" height="299" rx="17" fill="#0d192b" stroke="#405b78"/>
+          <path d="M38 211 L77 82 Q88 54 121 54 L338 54 Q373 56 392 90 L432 211" fill="#254766" stroke="#8db0d1" stroke-width="4"/>
+          <path d="M47 204 L87 93 Q99 69 126 69 L335 69 Q360 71 380 99 L420 204" fill="#1c3a57" stroke="#507899" stroke-width="2"/>
+          <path d="M27 243 Q235 216 443 243 L452 275 L18 275Z" fill="#293b51" stroke="#8db0d1" stroke-width="3"/>
+          <path d="M130 240 L164 222 L306 222 L340 240" fill="none" stroke="#607f9f" stroke-width="4"/>
+          <g transform="translate(205 99) rotate(-7)">
+            <rect x="0" y="0" width="57" height="98" rx="8" fill="#111827" stroke="#c7d9eb" stroke-width="3"/>
+            <rect x="6" y="9" width="45" height="74" rx="3" fill="#59d3a6"/>
+            <circle cx="28.5" cy="90" r="2" fill="#c7d9eb"/>
+            <path d="M15 29H42M15 42H42M15 55H35" stroke="#0b4339" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <path d="M233 201V222M226 214L233 223L240 214" stroke="#ffd166" stroke-width="4" fill="none"/>
+          <text x="235" y="34" fill="#eef4ff" font-size="15" text-anchor="middle" font-weight="700">VISTA DESDE DENTRO DEL COCHE</text>
+          <text x="235" y="294" fill="#ffd166" font-size="14" text-anchor="middle" font-weight="700">Móvil sujeto, estable y sin vibrar</text>
+        </svg>
+        <p class="muted small">Dibujo orientativo, no a escala. Utiliza un soporte firme que no bloquee la visión del conductor.</p>
+      </div>
+      <div>
+        <h3>Cómo colocarlo</h3>
+        <ol>
+          <li>Sujeta el móvil al parabrisas o al salpicadero con un soporte firme.</li>
+          <li>Deja libre el micrófono, orientado hacia la zona del motor. No muevas el teléfono durante la prueba.</li>
+          <li><strong>No lo pongas en el vano motor</strong> ni cerca de correas, ventiladores o superficies calientes.</li>
+          <li>Vehículo estacionado, freno de mano puesto y cambio en P o punto muerto.</li>
+        </ol>
+        <p class="notice"><strong>Entorno silencioso:</strong> apaga música y ventilación si es seguro hacerlo. Evita tráfico, viento, obras, voces y otros motores, porque pueden contaminar la medición.</p>
+        <p class="safe">Realiza la prueba al aire libre o con ventilación excelente. Nunca mantengas el motor encendido en un garaje cerrado.</p>
+      </div>
+    </div>
+    <p class="muted small"><strong>Ruido ambiente:</strong> al empezar, con el motor apagado, el programa mide durante 6 segundos el ruido del entorno, lo quita del análisis y ajusta solo el filtro de graves. No tienes que configurar nada. Durante la prueba se avisa además si se detectan ruidos externos puntuales (voces, bocinas, portazos).</p>
+    <p class="notice small"><strong>Para un análisis fiable:</strong> haz la prueba con el motor caliente (a temperatura normal), en un lugar silencioso y con el móvil fijo. El análisis se hace al terminar, en este mismo dispositivo.</p>
+    <button id="start" type="button">He colocado el móvil · Preparar prueba</button><button id="back" type="button" class="secondary">Volver a datos</button>
+    <p class="muted small">Al comenzar se anunciarán las instrucciones. El permiso de micrófono se solicita después de la locución inicial. Si el navegador no permite grabar archivos locales, abre el HTML en un contexto compatible, como HTTPS o localhost.</p>
+  </section>
+
+  <section id="results" class="card hidden">
+    <h2>Resultado de la prueba</h2>
+    <div id="analysisProgress" class="notice off">Analizando…</div>
+    <div id="report" class="off">
+      <div id="verdict" class="verdict nc"></div>
+      <div id="idleCard"></div>
+      <h3>Hallazgos</h3><div id="findings"></div>
+      <h3>Detalle por fase</h3><div id="statsBox" class="tablewrap"></div>
+      <details><summary>Cómo se analiza y qué límites tiene</summary>
+        <p><strong>Régimen exacto:</strong> con el número de cilindros indicado, el programa mide el intervalo entre disparos en la envolvente del sonido y calcula las rpm (rpm = 120 × frecuencia de ciclo). La frecuencia de encendido es rpm × cilindros / 120. Después lo contrasta con los armónicos del espectro, que dan el nivel de fiabilidad.</p>
+        <p><strong>Qué más mide:</strong> estabilidad del ralentí, uniformidad entre cilindros, chasquidos metálicos sincronizados con el motor y tonos agudos persistentes, y si siguen al régimen (rodamiento, polea, correa) o son fijos (ambiente). Los datos del vehículo (combustible, motor frío o caliente, edad y kilometraje) ajustan la interpretación.</p>
+        <p><strong>Límites:</strong> es un análisis orientativo con umbrales sin calibrar contra una base de motores reales; la medición de rpm se ha validado solo con audio sintético. El micrófono de un móvil no capta bien las frecuencias graves y el resultado depende mucho de la colocación y del ruido ambiente. Solo detecta anomalías que dejan huella sonora: no ve fallos de sensores, fugas, desgaste sin ruido, ni estado de frenos, suspensión o electrónica. Los motores con encendido irregular por diseño pueden dar falsos avisos y en diésel cierto tic es normal.</p>
+        <p><strong>Cómo usarlo bien:</strong> repite la prueba 2 o 3 veces. Una anomalía que aparece siempre y en varias fases es mucho más fiable que una que aparece una vez. Un "sin anomalías" no garantiza que el motor esté sano.</p>
+      </details>
+    </div>
+    <p id="summary" class="small muted"></p><p id="vehicleSummary" class="muted small"></p>
+    <button id="downloadReport">Descargar informe (.json)</button><button id="download" class="secondary">Descargar audios</button><button id="again" class="secondary">Nueva prueba</button>
+  </section>
+</main>
+
+<section id="test" aria-live="polite">
+  <div class="phasehead">
+    <div id="dots" class="dots" aria-hidden="true"></div>
+    <div id="counter" class="counter">Fase 1 de 6</div>
+    <h2 id="title" class="phase">RALENTÍ</h2>
+    <div id="desc" class="desc"></div>
+    <div id="status" class="status">Preparando instrucción de voz…</div>
+    <div id="calibBtns" class="calibbtns"></div>
+  </div>
+  <div class="instr">
+    <div class="tachbox">
+      <div class="gaugewrap">
+        <canvas id="tach" aria-label="Cuentarrevoluciones"></canvas>
+        <div id="count" class="count off" aria-live="assertive"></div>
+      </div>
+      <div id="tachread" class="tachread">— rpm</div>
+      <div id="tachnote" class="tachnote">&nbsp;</div>
+    </div>
+    <div class="side">
+      <div class="timerrow"><div id="timer" class="timer">00:20</div><div id="onflag" class="onflag off"><i></i>ON</div></div>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div id="mic" class="pill">Micrófono apagado</div>
+      <div class="meterbox">
+        <div class="meterhead"><span>Nivel del micrófono</span><span id="dbread">— dBFS</span></div>
+        <canvas id="vu"></canvas>
+        <canvas id="spec"></canvas>
+        <div id="noiseflag" class="noiseflag">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+  <div><button id="pause" class="secondary" type="button">Pausar</button><button id="stop" class="secondary" type="button">Finalizar prueba</button></div>
+  <p class="fullnote">Mantén el vehículo estacionado y no superes las 2.000 RPM. Si la prueba no es segura, finalízala.</p>
+</section>
+
+<section id="bye" class="bye off">
+  <h2>Programa cerrado</h2>
+  <p class="muted">El micrófono está apagado. Ya puedes cerrar esta pestaña.</p>
+  <button id="byeBack" type="button">Volver a empezar</button>
+</section>
+
+<div id="ver" class="ver" aria-hidden="true"></div>
+<script>
+const $=id=>document.getElementById(id);
+const DURATION=20;      // segundos de grabación por fase
+const GAP=700;          // ms de silencio tras acabar la voz, antes de grabar
+const phases=[
+ {title:"MANTÉN EL RALENTÍ",desc:"Motor estable, sin tocar el acelerador. El programa aprende ahora el sonido de tu motor al ralentí.",voice:"Fase uno. Mantén el motor al ralentí, estable, durante veinte segundos. Durante esta fase el programa aprende el sonido de tu motor."},
+ {title:"MANTÉN 1.200 RPM",desc:"Sube suavemente a unas 1.200 RPM y mantenlas. Guíate por el cuentarrevoluciones.",voice:""},
+ {title:"MANTÉN 1.600 RPM",desc:"Sube a unas 1.600 RPM y mantenlas. Guíate por el cuentarrevoluciones.",voice:""},
+ {title:"MÁXIMO 2.000 RPM",desc:"Mantén aproximadamente 2.000 RPM, sin superarlas.",voice:""},
+ {title:"ACELERA SUAVEMENTE",dur:5,desc:"Sube progresivamente del ralentí hasta 2.000 RPM en 5 segundos, sin acelerones bruscos.",voice:""},
+ {title:"VUELVE AL RALENTÍ",desc:"Suelta suavemente el acelerador y deja el motor al ralentí.",voice:""}
+];
+
+let idx=0,stream=null,recorder=null,chunks=[],files=[],ticker=null,active=false,paused=false,remaining=DURATION,startedAt=0,pausedElapsed=0;
+let voiceTimeout=null,voiceCallback=null,curUtter=null,gapTimer=null,capturing=false;
+let actx=null,analyser=null,destNode=null,srcNode=null,rafId=null,meterLive=false,recMime="";
+let phaseStats=[],curStats=null,profile=null,hpNodes=[];
+const CAL_SECONDS=6;
+let calibrating=false,calibStage=null,calibChunks=[],calibTimer=null,calibStart=0,calibPcm=null,calibFs=48000,ambientInfo=null;
+let vuDb=-100,peakHold=-100,peakUntil=0,ema=null,jumpFor=0,coolUntil=0,noiseUntil=0,clipUntil=0,lastT=0,lastFlag="";
+const tbuf=new Float32Array(2048);
+let fbuf=null;
+
+const COUNT=3,COUNT_SILENT=10;   // sin voz hay más margen para alcanzar el régimen (10 s)
+function curDur(){return (phases[Math.min(idx,phases.length-1)]||{}).dur||DURATION}
+function setOn(b){$("onflag").classList.toggle("off",!b)}
+function setStep(n){[...$("steps").children].forEach((li,i)=>{li.className=i+1<n?"done":i+1===n?"on":""})}
+function showOnly(id){["setup","prep","results"].forEach(s=>$(s).classList.toggle("hidden",s!==id));setStep({setup:1,prep:2,results:4}[id]);window.scrollTo(0,0)}
+setStep(1);
+/* ---------- VERSIÓN (en la app Android la da el propio paquete; en el navegador, esta constante) ---------- */
+const APP_VERSION="9.0";
+function appVersion(){try{if(window.AndroidBridge&&AndroidBridge.getVersion){const v=AndroidBridge.getVersion();if(v)return v}}catch(e){}return APP_VERSION}
+$("ver").textContent="v"+appVersion();
+/* ---------- DATOS DEL VEHÍCULO (obligatorios) ---------- */
+const YEAR_MAX=new Date().getFullYear()+1;
+const VFIELDS=[
+ ["make",v=>v.trim().length<2?"Escribe la marca (mínimo 2 letras).":""],
+ ["model",v=>v.trim().length<1?"Escribe el modelo.":""],
+ ["year",v=>{const y=+v.trim();return !/^\d{4}$/.test(v.trim())||y<1980||y>YEAR_MAX?"Indica un año entre 1980 y "+YEAR_MAX+".":""}],
+ ["engine",v=>v.trim().length<2?"Indica la cilindrada o el código del motor (ej. 2.0 TDI).":""],
+ ["fuel",v=>v?"":"Elige el combustible."],
+ ["cyl",v=>/^[3-6]$/.test(v)?"":"Elige el número de cilindros (de 3 a 6)."],
+ ["km",v=>{const t=v.trim().replace(/[.\s]/g,""),k=+t;return !/^\d+$/.test(t)||k>1500000?"Indica el kilometraje en números (0 a 1.500.000).":""}],
+];
+function validateField(id){const f=VFIELDS.find(x=>x[0]===id),el=$(id),m=f[1](el.value),box=el.closest(".field");
+ box.classList.toggle("err",!!m);box.querySelector(".msg").textContent=m;el.setAttribute("aria-invalid",m?"true":"false");return !m}
+function validateVehicle(focus){let first=null;for(const [id] of VFIELDS){if(!validateField(id)&&!first)first=$(id)}if(first&&focus)first.focus();return !first}
+VFIELDS.forEach(([id])=>{$(id).addEventListener("change",()=>validateField(id));$(id).addEventListener("blur",()=>{if($(id).value!=="")validateField(id)});$(id).addEventListener("input",()=>{if($(id).closest(".field").classList.contains("err"))validateField(id)})});
+try{localStorage.removeItem("mal_vehiculo_v1")}catch(e){}   // versiones anteriores guardaban los datos: se eliminan
+function vehicleCtx(){return{fuel:$("fuel").value,year:parseInt($("year").value)||null,km:parseInt($("km").value.replace(/[.\s]/g,""))||0}}
+function fillChips(){const v=id=>$(id).value.trim();$("vchips").innerHTML=[v("make")+" "+v("model"),v("year"),v("engine"),v("fuel"),v("cyl")+" cilindros",v("km").replace(/\B(?=(\d{3})+(?!\d))/g,".")+" km"].map(t=>"<span>"+esc(t)+"</span>").join("")}
+
+/* ---------- CAPTURA PCM (para el análisis) ---------- */
+let pcmChunks=null,lastReport=null;
+const TAP_SRC="class T extends AudioWorkletProcessor{constructor(){super();this.b=new Float32Array(4096);this.n=0}process(i){const c=i[0]&&i[0][0];if(c){for(let k=0;k<c.length;k++){this.b[this.n++]=c[k];if(this.n===4096){this.port.postMessage(this.b.slice(0));this.n=0}}}return true}}registerProcessor('pcm-tap',T);";
+let liveRing=null,liveW=0,liveFill=0,liveFs=48000,exited=false;
+function ringPush(c){if(!liveRing)return;const L=liveRing.length;
+  if(c.length>=L){liveRing.set(c.subarray(c.length-L));liveW=0;liveFill=L;return}
+  const first=Math.min(c.length,L-liveW);liveRing.set(c.subarray(0,first),liveW);if(first<c.length)liveRing.set(c.subarray(first),0);
+  liveW=(liveW+c.length)%L;liveFill=Math.min(L,liveFill+c.length)}
+function ringRead(sec){if(!liveRing)return new Float32Array(0);const L=liveRing.length,n=Math.min(liveFill,Math.round(sec*liveFs)),o=new Float32Array(n),st=(liveW-n+L)%L;
+  for(let i=0;i<n;i++)o[i]=liveRing[(st+i)%L];return o}
+function addPcm(chunk){ringPush(chunk);if(calibrating)calibChunks.push(chunk);if(capturing&&!paused&&pcmChunks)pcmChunks.push(chunk)}
+function joinPcm(ch){if(!ch||!ch.length)return null;let n=0;for(const c of ch)n+=c.length;const o=new Float32Array(n);let p=0;for(const c of ch){o.set(c,p);p+=c.length}return o}
+async function setupTap(node){
+  liveFs=actx.sampleRate;liveRing=new Float32Array(Math.ceil(liveFs*1.5));liveW=0;liveFill=0;
+  const mute=actx.createGain();mute.gain.value=0;mute.connect(actx.destination);
+  try{
+    const url=URL.createObjectURL(new Blob([TAP_SRC],{type:"application/javascript"}));
+    await actx.audioWorklet.addModule(url);URL.revokeObjectURL(url);
+    const w=new AudioWorkletNode(actx,"pcm-tap",{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
+    w.port.onmessage=e=>addPcm(e.data);node.connect(w);w.connect(mute);
+  }catch(err){
+    const sp=actx.createScriptProcessor(4096,1,1);   // alternativa para navegadores sin AudioWorklet
+    sp.onaudioprocess=ev=>addPcm(new Float32Array(ev.inputBuffer.getChannelData(0)));
+    node.connect(sp);sp.connect(mute);
+  }
+}
+
+/*DSP-START*/
+/* ===== Motor de análisis acústico (sin DOM; se prueba por separado en Node) ===== */
+const FSE=4000,WIN_S=1.5,HOP_S=0.5;
+const BANDS=[{lo:250,hi:3000,name:"250–3000 Hz"},{lo:80,hi:500,name:"80–500 Hz"}];
+const PHCFG=[{kind:"idle"},{kind:"hold",rpm:1200},{kind:"hold",rpm:1600},{kind:"hold",rpm:2000},{kind:"ramp"},{kind:"idle"}];
+const THR={detect:0.12,idleWarn:0.03,idleBad:0.06,qWarn:0.93,qBad:0.78,crestWarn:5,crestBad:8,syncMin:0.25,toneProm:16,tonePers:0.7,onTarget:0.15};
+
+function median(a){if(!a.length)return NaN;const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
+
+function fft(re,im){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t}}
+  for(let len=2;len<=n;len<<=1){
+    const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;
+      for(let k=0;k<h;k++){const a=i+k,b=a+h,tr=re[b]*cr-im[b]*ci,ti=re[b]*ci+im[b]*cr;
+        re[b]=re[a]-tr;im[b]=im[a]-ti;re[a]+=tr;im[a]+=ti;const nc=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=nc}}
+  }
+}
+function biquad(type,f0,fs,Q){
+  const w=2*Math.PI*f0/fs,c=Math.cos(w),s=Math.sin(w),a=s/(2*Q);let b0,b1,b2;
+  if(type==="hp"){b0=(1+c)/2;b1=-(1+c);b2=(1+c)/2}else{b0=(1-c)/2;b1=1-c;b2=(1-c)/2}
+  const a0=1+a;return{b0:b0/a0,b1:b1/a0,b2:b2/a0,a1:-2*c/a0,a2:(1-a)/a0};
+}
+function applyBiquad(x,B){const y=new Float64Array(x.length);let x1=0,x2=0,y1=0,y2=0;
+  for(let i=0;i<x.length;i++){const v=x[i],o=B.b0*v+B.b1*x1+B.b2*x2-B.a1*y1-B.a2*y2;x2=x1;x1=v;y2=y1;y1=o;y[i]=o}return y}
+function bandpass(x,fs,lo,hi){
+  const fh=Math.min(hi,fs*0.45);let y=x;
+  y=applyBiquad(y,biquad("hp",lo,fs,.707));y=applyBiquad(y,biquad("hp",lo,fs,.707));
+  y=applyBiquad(y,biquad("lp",fh,fs,.707));y=applyBiquad(y,biquad("lp",fh,fs,.707));return y}
+function envelope(x,fs,fsE){const D=Math.max(1,Math.round(fs/fsE)),n=Math.floor(x.length/D),e=new Float64Array(n);
+  for(let i=0;i<n;i++){let s=0;for(let k=0;k<D;k++)s+=Math.abs(x[i*D+k]);e[i]=s/D}return{e,fsE:fs/D}}
+
+function smooth(e,L){const n=e.length,o=new Float64Array(n),pre=new Float64Array(n+1);for(let i=0;i<n;i++)pre[i+1]=pre[i]+e[i];
+  const h=L>>1;for(let i=0;i<n;i++){const a=Math.max(0,i-h),b=Math.min(n,i+h+1);o[i]=(pre[b]-pre[a])/(b-a)}return o}
+function prepareEnv(x,fs){
+  // la envolvente se alisa 3 ms para eliminar el rizado de la rectificación (evita picos falsos en la autocorrelación)
+  const bands=BANDS.map(b=>{const E=envelope(bandpass(x,fs,b.lo,b.hi),fs,FSE);return{e:smooth(E.e,12),fsE:E.fsE,band:b.name}});
+  const H=envelope(bandpass(x,fs,2000,7000),fs,FSE);
+  let s=0,pk=0,clip=0;for(let i=0;i<x.length;i++){const a=Math.abs(x[i]);s+=a*a;if(a>pk)pk=a;if(a>=.99)clip++}
+  return{bands,hf:H,rmsDb:10*Math.log10(s/x.length+1e-12),peakDb:20*Math.log10(pk+1e-9),clip:clip/x.length,dur:x.length/fs};
+}
+
+/* ----- autocorrelación normalizada por ventanas ----- */
+function mkWin(e,s,N){const w=new Float64Array(N);let m=0;for(let i=0;i<N;i++){w[i]=e[s+i];m+=w[i]}m/=N;
+  const cs=new Float64Array(N+1);for(let i=0;i<N;i++){w[i]-=m;cs[i+1]=cs[i]+w[i]*w[i]}return{w,cs}}
+function acLag(w,cs,lag){const N=w.length;if(lag<1||lag>=N-16)return 0;let s=0;for(let t=0,m=N-lag;t<m;t++)s+=w[t]*w[t+lag];
+  const d=Math.sqrt(cs[N-lag]*(cs[N]-cs[lag]));return d>0?s/d:0}
+function lagCurve(w,cs,lo,hi){const r=new Float64Array(hi-lo+3);for(let i=0;i<r.length;i++)r[i]=acLag(w,cs,lo-1+i);return r}
+function pickPeak(r,lo,mode){
+  let mx=0;for(let i=1;i<r.length-1;i++)if(r[i]>mx)mx=r[i];if(mx<=0)return null;
+  for(let i=1;i<r.length-1;i++){
+    if(r[i]>r[i-1]&&r[i]>=r[i+1]&&(mode==="max"?r[i]===mx:r[i]>=0.7*mx)){
+      const d=r[i-1]-2*r[i]+r[i+1],off=d<0?0.5*(r[i-1]-r[i+1])/d:0;return{lag:lo-1+i+off,r:r[i]}}}
+  return null}
+
+function trackWin(w,cs,fsE,n,rpmLo,rpmHi,mode){
+  const lo=Math.max(6,Math.floor(fsE*120/(rpmHi*n))),hi=Math.ceil(fsE*120/(rpmLo*n));
+  const pf=pickPeak(lagCurve(w,cs,lo,hi),lo,mode||"max");if(!pf)return null;
+  const lc=pf.lag*n,a=Math.round(lc*.97),b=Math.round(lc*1.03);
+  const pc=pickPeak(lagCurve(w,cs,a,b),a,"max");
+  if(!pc)return{rF:pf.r,rC:0,rpm:120*fsE/lc,q:NaN};
+  return{rF:pf.r,rC:pc.r,rpm:120*fsE/pc.lag,q:pc.r>0.05?pf.r/pc.r:NaN};
+}
+function trackBand(env,n,rpmLo,rpmHi,maxWins,mode,winS,hopS){
+  const N=Math.round((winS||WIN_S)*env.fsE),H=Math.round((hopS||HOP_S)*env.fsE),starts=[];
+  for(let s=0;s+N<=env.e.length;s+=H)starts.push(s);
+  let use=starts;if(maxWins&&starts.length>maxWins){use=[];for(let i=0;i<maxWins;i++)use.push(starts[Math.floor(i*(starts.length-1)/(maxWins-1||1))])}
+  return use.map(s=>{const{w,cs}=mkWin(env.e,s,N);return trackWin(w,cs,env.fsE,n,rpmLo,rpmHi,mode)});
+}
+function rpmRange(cfg){return cfg.kind==="idle"?[600,1100]:cfg.kind==="hold"?[cfg.rpm*.75,cfg.rpm*1.25]:[600,2300]}
+function trackPhase(P,cfg,n){
+  const[lo,hi]=rpmRange(cfg);let best=null;
+  for(const env of P.bands){
+    const wins=trackBand(env,n,lo,hi,0,cfg.kind==="ramp"?"first":"max",cfg.kind==="idle"?0.6:cfg.kind==="ramp"?0.8:WIN_S,cfg.kind==="idle"?0.2:cfg.kind==="ramp"?0.3:HOP_S);const ok=wins.filter(x=>x&&x.rF>=THR.detect);
+    const sc=(median(ok.map(x=>x.rF))||0)*(ok.length/Math.max(1,wins.length));
+    if(!best||sc>best.sc)best={band:env.band,wins,sc};
+  }
+  return best;
+}
+function summarize(best,cfg){
+  const wins=best.wins,ok=wins.filter(x=>x&&x.rF>=THR.detect),frac=wins.length?ok.length/wins.length:0;
+  const r={periodic:frac>=0.5,frac,band:best.band,nWin:wins.length};
+  if(!ok.length)return r;
+  const rp=ok.map(x=>x.rpm),s=rp.slice().sort((a,b)=>a-b),t=Math.floor(s.length*.1),core=s.slice(t,s.length-t);
+  const mean=core.reduce((a,b)=>a+b,0)/core.length;
+  r.rpm=median(rp);r.cv=Math.sqrt(core.reduce((a,b)=>a+(b-mean)*(b-mean),0)/core.length)/mean;
+  r.rF=median(ok.map(x=>x.rF));r.rC=median(ok.map(x=>x.rC));
+  const qs=ok.map(x=>x.q).filter(Number.isFinite);r.q=qs.length>=3?median(qs):NaN;
+  r.first=median(rp.slice(0,3));r.last=median(rp.slice(-3));
+  if(cfg.kind==="hold")r.dev=r.rpm/cfg.rpm-1;
+  return r;
+}
+function inferCyl(P){
+  const cands=[3,4,5,6,8],score={};
+  for(const n of cands){
+    const vals=[];let tried=0;
+    for(let i=0;i<PHCFG.length;i++){if(!P[i]||PHCFG[i].kind!=="hold")continue;const rpm=PHCFG[i].rpm;
+      for(const env of P[i].bands){const wins=trackBand(env,n,rpm*.8,rpm*1.2,6);tried+=wins.length;
+        for(const w of wins)if(w&&Math.abs(w.rpm/rpm-1)<.1)vals.push(w.rF)}}
+    score[n]=vals.length>=4?median(vals)*vals.length/Math.max(1,tried):0;
+  }
+  const M=Math.max(...cands.map(n=>score[n]));if(M<0.12)return{n:0,score};
+  let n=0;for(const c of cands)if(score[c]>=0.6*M)n=c;
+  return{n,score};
+}
+
+/* ----- golpeteo / chasquidos en banda alta ----- */
+function tickMetrics(hf,rpm,cfg){
+  const e=hf.e,fsE=hf.fsE,sorted=Float64Array.from(e).sort(),med=sorted[sorted.length>>1],p=sorted[Math.floor(sorted.length*.997)];
+  const crest=p/(med||1e-12);let sync=NaN;
+  if(rpm&&cfg.kind!=="ramp"){
+    const{w,cs}=mkWin(e,0,e.length),Tc=fsE*120/rpm;let best=0;
+    for(const m of[1,.5]){const c=Tc*m;for(let L=Math.round(c*.97);L<=Math.round(c*1.03);L++){const r=acLag(w,cs,L);if(r>best)best=r}}
+    sync=best;
+  }
+  return{crest,sync};
+}
+
+/* ----- tonos persistentes (correas, rodamientos, alternador…) ----- */
+function welchBlocks(x,fs,nfft,blockSec){
+  const hop=nfft>>1,win=new Float64Array(nfft);for(let i=0;i<nfft;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(nfft-1));
+  const nb=Math.max(1,Math.floor(x.length/(blockSec*fs))),bl=Math.floor(x.length/nb),half=nfft/2+1;
+  const re=new Float64Array(nfft),im=new Float64Array(nfft),blocks=[],avg=new Float64Array(half);
+  for(let b=0;b<nb;b++){
+    const P=new Float64Array(half);let cnt=0;
+    for(let s=b*bl;s+nfft<=(b+1)*bl;s+=hop){
+      for(let i=0;i<nfft;i++){re[i]=x[s+i]*win[i];im[i]=0}fft(re,im);
+      for(let k=0;k<half;k++)P[k]+=re[k]*re[k]+im[k]*im[k];cnt++}
+    if(cnt){for(let k=0;k<half;k++){P[k]/=cnt;avg[k]+=P[k]}blocks.push(P)}
+  }
+  for(let k=0;k<half;k++)avg[k]/=Math.max(1,blocks.length);
+  return{avg,blocks,binHz:fs/nfft};
+}
+function floorMedian(P,k,R,ex){const v=[];for(let j=Math.max(0,k-R);j<=Math.min(P.length-1,k+R);j++)if(Math.abs(j-k)>ex)v.push(P[j]);
+  v.sort((a,b)=>a-b);return v[v.length>>1]||1e-20}
+function findTones(x,fs){
+  // Espectro por bloques de 0,4 s (resolución ≈ 12 Hz): tolera la oscilación normal del régimen.
+  const W=welchBlocks(x,fs,4096,0.4),blocks=W.blocks,binHz=W.binHz,n=W.avg.length;
+  const k0=Math.ceil(1200/binHz),k1=Math.min(n-3,Math.floor(7000/binHz)),R=Math.round(250/binHz),ex=2;
+  const peaks=[];
+  blocks.forEach((P,bi)=>{
+    const pre=new Float64Array(n+1);for(let i=0;i<n;i++)pre[i+1]=pre[i]+P[i];
+    for(let k=k0;k<=k1;k++){
+      if(!(P[k]>P[k-1]&&P[k]>=P[k+1]))continue;
+      const a=Math.max(0,k-R),b=Math.min(n,k+R+1);if(P[k]<4*(pre[b]-pre[a])/(b-a))continue;
+      const prom=10*Math.log10(P[k]/floorMedian(P,k,R,ex));if(prom<12)continue;
+      peaks.push({f:k*binHz,prom,b:bi,used:false});
+    }});
+  const nb=blocks.length,res=[];
+  if(nb<4)return res;
+  peaks.sort((p,q)=>q.prom-p.prom);
+  for(const p of peaks){
+    if(p.used)continue;
+    const mem=peaks.filter(q=>!q.used&&Math.abs(q.f/p.f-1)<.03);
+    const bset=new Set(mem.map(q=>q.b)),pers=bset.size/nb;
+    if(pers<THR.tonePers)continue;
+    mem.forEach(q=>q.used=true);
+    const fm=median(mem.map(q=>q.f)),pm=mem.reduce((a,q)=>a+q.prom,0)/mem.length;
+    if(pm<THR.toneProm-4)continue;
+    if(res.every(u=>Math.abs(u.f-fm)>60))res.push({f:fm,prom:pm,pers});
+    if(res.length>=3)break;
+  }
+  return res;
+}
+function toneGroups(ph){
+  const groups=[];const seen=new Set();
+  for(let i=0;i<ph.length;i++){const p=ph[i];if(!p||!p.tones)continue;
+    for(const t of p.tones){
+      const ratio=p.s&&p.s.rpm?t.f/p.s.rpm:NaN;let fixed=0,linked=0;
+      for(let j=0;j<ph.length;j++){const q=ph[j];if(!q||!q.tones||q.cfg.kind==="ramp")continue;
+        if(q.tones.some(u=>Math.abs(u.f/t.f-1)<.02))fixed++;
+        if(Number.isFinite(ratio)&&q.s&&q.s.rpm&&q.tones.some(u=>Math.abs((u.f/q.s.rpm)/ratio-1)<.04))linked++;}
+      let cls=fixed>=3?"fijo":linked>=3?"ligado":"puntual";
+      const key=cls==="fijo"?"f"+Math.round(t.f/60):cls==="ligado"?"r"+Math.round(ratio*10):"p"+i+"_"+Math.round(t.f/60);
+      if(seen.has(key))continue;seen.add(key);
+      groups.push({cls,f:t.f,prom:t.prom,phase:i,ratio,count:cls==="fijo"?fixed:cls==="ligado"?linked:1});
+    }}
+  return groups;
+}
+
+/* ----- rpm exactas a partir de los armónicos del encendido ----- */
+function harmonicRpm(x,fs,n,guess){
+  // Con n cilindros, el encendido se repite a f = rpm*n/120 Hz y deja armónicos a f, 2f, 3f… en el espectro.
+  // Se busca el régimen (cerca de la estimación previa) cuya "peineta" de armónicos encaja mejor con el espectro medido.
+  const nfft=32768;if(!n||!guess||x.length<nfft*2)return null;
+  const W=welchBlocks(x,fs,nfft,x.length/fs),P=W.avg,bin=W.binHz,N=P.length;
+  const db=new Float64Array(N);for(let k=0;k<N;k++)db[k]=10*Math.log10(P[k]+1e-30);
+  const R=60,pre=new Float64Array(N+1);for(let k=0;k<N;k++)pre[k+1]=pre[k]+db[k];
+  const prom=new Float64Array(N);
+  for(let k=0;k<N;k++){const a=Math.max(0,k-R),b=Math.min(N,k+R+1);prom[k]=Math.min(20,Math.max(0,db[k]-(pre[b]-pre[a])/(b-a)))}
+  const fMin=45,fMax=1500;
+  const score=r=>{const f=r*n/120;let s=0,H=0;
+    for(let h=1;h*f<=fMax;h++){const fh=h*f;if(fh<fMin)continue;const c=Math.round(fh/bin),t=1+Math.floor(.004*fh/bin);let m=0;
+      for(let k=c-t;k<=c+t;k++)if(k>0&&k<N&&prom[k]>m)m=prom[k];s+=m;H++}
+    return H>=3?s/H:0};
+  const step=guess*0.0004,lo=guess*0.94,cnt=Math.round(guess*0.12/step),sc=new Float64Array(cnt+1);
+  let bi=0;for(let i=0;i<=cnt;i++){sc[i]=score(lo+i*step);if(sc[i]>sc[bi])bi=i}
+  let off=0;if(bi>0&&bi<cnt){const d=sc[bi-1]-2*sc[bi]+sc[bi+1];if(d<0)off=.5*(sc[bi-1]-sc[bi+1])/d}
+  const best=sc[bi],med=median(Array.from(sc));
+  const res={rpm:lo+(bi+off)*step,mean:best,contrast:best-med};
+  return best>=3&&best-med>=1.2?res:null;
+}
+function refineRpm(o,ph,cfg,n){
+  if(!o.s||!o.s.periodic||cfg.kind==="ramp"||!n)return;
+  o.s.rpmEnv=o.s.rpm;
+  const hs=harmonicRpm(ph.pcm,ph.fs,n,o.s.rpm);
+  if(hs){const d=Math.abs(hs.rpm/o.s.rpmEnv-1);o.s.rpmSpec=hs.rpm;o.s.specMean=hs.mean;o.s.specContrast=hs.contrast;
+    o.s.rpmConf=d<.02?"alta":d<.04?"media":"baja"}   // el valor de rpm sigue siendo el de la temporización de pulsos (más exacto); los armónicos solo lo confirman
+  else o.s.rpmConf="media";
+  if(cfg.kind==="hold")o.s.dev=o.s.rpm/cfg.rpm-1;
+  o.s.fire=o.s.rpm*n/120;o.s.cycle=o.s.rpm/120;
+}
+
+/* ----- hallazgos y veredicto ----- */
+const SEVR={info:0,warn:1,bad:2};
+function buildFindings(R){
+  const F=[],add=(sev,key,title,detail)=>F.push({sev,key,title,detail});
+  const P=R.phases;
+  // régimen
+  const holds=P.filter(p=>p&&p.cfg.kind==="hold"&&p.s&&p.s.periodic);
+  const off=holds.filter(p=>Math.abs(p.s.dev)>THR.onTarget);
+  if(off.length>=2)add("info","regimen","El régimen no coincidió con el pedido",`En ${off.length} fases el régimen medido se desvió más de un ${Math.round(THR.onTarget*100)} % del solicitado (${off.map(p=>`fase ${p.n}: ${Math.round(p.s.rpm)} rpm`).join("; ")}). Los resultados son menos fiables; repite manteniendo el régimen estable.`);
+  const ramp=P[PHCFG.findIndex(c=>c.kind==="ramp")];if(ramp&&ramp.s&&ramp.s.periodic&&ramp.s.last<ramp.s.first*1.25)add("info","rampa","No se detectó la subida progresiva de la fase de aceleración",`Régimen al inicio ≈ ${Math.round(ramp.s.first)} rpm y al final ≈ ${Math.round(ramp.s.last)} rpm.`);
+  // ralentí
+  for(const i of PHCFG.map((c,k)=>c.kind==="idle"?k:-1).filter(k=>k>=0)){const p=P[i];if(!p||!p.s||!p.s.periodic||!Number.isFinite(p.s.cv))continue;
+    const pc=(p.s.cv*100).toFixed(1);
+    if(p.s.cv>THR.idleBad)add("bad","ralenti",`Ralentí muy inestable (fase ${p.n})`,`El régimen oscila un ${pc} % alrededor de ≈ ${Math.round(p.s.rpm)} rpm. Puede indicar fallos de combustión, mezcla irregular, entrada de aire falso o problemas de regulación del ralentí.`);
+    else if(p.s.cv>THR.idleWarn)add("warn","ralenti",`Ralentí algo irregular (fase ${p.n})`,`El régimen oscila un ${pc} % alrededor de ≈ ${Math.round(p.s.rpm)} rpm. Conviene repetir la prueba con el motor a temperatura normal.`);
+  }
+  // equilibrio entre cilindros
+  const qs=holds.map(p=>p.s.q).filter(Number.isFinite);
+  if(qs.length>=2){const q=median(qs),conf=R.inferred?"estimado":"indicado";
+    const note=R.inferred?" El número de cilindros se ha estimado, no indicado: confirma ese dato para fiarte de este resultado.":"";
+    const odd=" Los motores con encendido irregular por diseño (algunos V6, V8 o bóxer) pueden dar falsos avisos.";
+    if(q<THR.qBad)add(R.inferred?"warn":"bad","equilibrio","Pulsos de combustión desiguales entre cilindros",`Índice de equilibrio ${q.toFixed(2)} (1,00 = uniforme) en ${qs.length} fases, con ${R.n} cilindros ${conf}s. Puede apuntar a un cilindro que trabaja peor (fallo de encendido o inyección, pérdida de compresión).${odd}${note}`);
+    else if(q<THR.qWarn)add("warn","equilibrio","Ligera desigualdad entre cilindros",`Índice de equilibrio ${q.toFixed(2)} (1,00 = uniforme) en ${qs.length} fases.${odd}${note}`);
+  }
+  // golpeteo
+  const tk=P.filter(p=>p&&p.tick&&p.tick.crest>=THR.crestWarn);
+  const sync=tk.filter(p=>p.tick.sync>=THR.syncMin),nosync=tk.filter(p=>!(p.tick.sync>=0.15));
+  if(sync.length>=2){const strong=sync.filter(p=>p.tick.crest>=THR.crestBad).length>=2;
+    add(strong?"bad":"warn","tick","Chasquidos metálicos sincronizados con el motor",`Impulsos agudos que se repiten con el ritmo del motor en ${sync.length} fases (fases ${sync.map(p=>p.n).join(", ")}). Puede corresponder a holgura de taqués o balancines, inyectores o golpeteo mecánico. En motores diésel cierto "tic" es normal.`);}
+  else if(nosync.length>=2)add("info","tick_ext","Impulsos agudos no sincronizados",`Se detectaron golpes puntuales en ${nosync.length} fases, pero no siguen el ritmo del motor: probablemente ruido ambiente (voces, portazos, tráfico).`);
+  // tonos
+  for(const g of R.groups){
+    const f=Math.round(g.f);
+    if(g.cls==="ligado")add("warn","tono",`Tono agudo continuo ligado al régimen (${f} Hz)`,`Aparece en ${g.count} fases y su frecuencia sube con las rpm. Es típico de un elemento giratorio auxiliar: rodamiento, alternador, polea tensora, bomba o correa.`);
+    else if(g.cls==="puntual"&&g.prom>=22)add("warn","tono",`Tono agudo puntual (${f} Hz, fase ${g.phase+1})`,`Aparece solo en una fase, a ${Math.round(R.phases[g.phase].s&&R.phases[g.phase].s.rpm||0)||"?"} rpm aprox. Un chirrido en un régimen concreto suele deberse a una correa o polea.`);
+    else if(g.cls==="fijo")add("info","tono_fijo",`Tono fijo de ${f} Hz`,`Se mantiene igual en todos los regímenes, así que probablemente no es del motor (ventilador, electrónica del móvil, ambiente).`);
+  }
+  // calidad
+  const noisy=P.filter(p=>p&&p.events>0);
+  if(noisy.length>=3)add("info","ruido","Ruido externo en varias fases",`Se avisó de ruidos externos en ${noisy.length} fases. Busca un lugar más silencioso.`);
+  if(P.some(p=>p&&p.lvl&&p.lvl.clip>0.001))add("info","sat","Señal saturada",`El micrófono saturó en alguna fase. Aleja el móvil del motor o reduce la ganancia de entrada.`);
+  // Contexto del vehículo: el combustible cambia cómo se interpreta el sonido
+  const ctx=R.ctx||{},diesel=/di[eé]sel/i.test(ctx.fuel||""),hybrid=/h[ií]brido/i.test(ctx.fuel||"");
+  const idleIdx=PHCFG.map((c,k)=>c.kind==="idle"?k:-1).filter(k=>k>=0);
+  if(hybrid)add("info","hibrido","Vehículo híbrido","En un híbrido el motor de combustión puede apagarse o variar de régimen por su cuenta; interpreta el ralentí con cautela.");
+  else{
+    let done=false;
+    for(const i of idleIdx){const p=P[i];if(done||!p||!p.s||!p.s.periodic||p.s.rpmConf==="baja")continue;const r=p.s.rpm;
+      if(r>1000){done=true;add("warn","ralenti_alto",`Ralentí alto (fase ${p.n}: ${Math.round(r)} rpm)`,"Con el motor caliente lo habitual son 650 a 900 rpm (si estaba frío, es normal que sea más alto: repite la prueba con el motor caliente). Un ralentí alto con el motor caliente puede deberse a entrada de aire falso, mariposa o válvula de ralentí sucia, o a un sensor.")}
+      else if(r<650){done=true;add("warn","ralenti_bajo",`Ralentí bajo (fase ${p.n}: ${Math.round(r)} rpm)`,"Con el motor caliente lo habitual son 650 a 900 rpm. Un ralentí bajo puede indicar mezcla pobre o rica, o un motor que trabaja forzado.")}}
+  }
+  if(diesel)for(const f of F)if(f.key==="tick"&&f.sev==="bad")f.sev="warn";
+  return F;
+}
+function makeVerdict(R){
+  const P=R.phases.filter(p=>p&&p.s),valid=P.filter(p=>p.s.periodic).length;
+  if(P.length<4||valid<3)return{level:"nc",title:"PRUEBA NO CONCLUYENTE",text:`No se pudo localizar la firma periódica del motor en suficientes fases (${valid} de ${P.length}). Suele deberse a ruido ambiente, móvil demasiado lejos o régimen no mantenido. Repite la prueba en un lugar silencioso con el móvil más cerca del motor.`};
+  const mx=Math.max(-1,...R.findings.map(f=>SEVR[f.sev]));
+  if(mx>=2)return{level:"bad",title:"INDICIOS A REVISAR",text:"El análisis encontró señales acústicas que merecen revisión por un mecánico."};
+  if(mx===1)return{level:"warn",title:"ATENCIÓN · POSIBLES ANOMALÍAS",text:"Hay señales acústicas dudosas. Repite la prueba para confirmar y, si se repiten, consulta a un mecánico."};
+  return{level:"ok",title:"SIN ANOMALÍAS ACÚSTICAS DETECTADAS",text:"En esta prueba no se detectaron irregularidades en las señales analizadas. Esto no descarta averías que no dejan huella acústica."};
+}
+
+/* ----- ruido ambiente: perfil medido con el motor apagado y resta espectral ----- */
+function hannWin(N){const w=new Float64Array(N);for(let i=0;i<N;i++)w[i]=.5-.5*Math.cos(2*Math.PI*i/N);return w}
+function noiseProfile(x,fs,N=2048){
+  const hop=N/2,nf=Math.floor((x.length-N)/hop)+1;if(nf<4)return null;
+  const w=hannWin(N),mean=new Float64Array(N/2+1),re=new Float64Array(N),im=new Float64Array(N);
+  for(let f=0;f<nf;f++){
+    for(let i=0;i<N;i++){re[i]=x[f*hop+i]*w[i];im[i]=0}
+    fft(re,im);for(let k=0;k<=N/2;k++)mean[k]+=Math.hypot(re[k],im[k])/nf;
+  }
+  // bins con tono estable en el ambiente (zumbidos, ventiladores): se atenúan más
+  const tonal=new Uint8Array(N/2+1),R=10;
+  for(let k=2;k<=N/2-2;k++){const v=[];for(let j=Math.max(0,k-R);j<=Math.min(N/2,k+R);j++)if(Math.abs(j-k)>2)v.push(mean[j]);v.sort((a,b)=>a-b);if(mean[k]>2.5*v[v.length>>1])tonal[k]=1}
+  return{N,fs,mean,tonal};
+}
+function denoise(x,fs,prof,alpha=1.5,beta=0.08){
+  // resta espectral por tramos (ventana de Hann, solape del 75 %): atenúa lo que no supera el nivel del ruido medido
+  if(!prof||prof.fs!==fs)return x;
+  const N=prof.N,hop=N/4,w=hannWin(N),out=new Float32Array(x.length),nrm=new Float32Array(x.length);
+  const re=new Float64Array(N),im=new Float64Array(N);
+  for(let p=0;p+N<=x.length;p+=hop){
+    for(let i=0;i<N;i++){re[i]=x[p+i]*w[i];im[i]=0}
+    fft(re,im);
+    for(let k=0;k<=N/2;k++){
+      const m=Math.hypot(re[k],im[k]),g=m>1e-12?Math.max(1-alpha*prof.mean[k]/m,prof.tonal[k]?0.015:beta):1;
+      re[k]*=g;im[k]*=g;if(k>0&&k<N/2){re[N-k]=re[k];im[N-k]=-im[k]}
+    }
+    for(let i=0;i<N;i++)im[i]=-im[i];fft(re,im);   // inversa: conj(FFT(conj(X)))/N
+    for(let i=0;i<N;i++){out[p+i]+=re[i]/N*w[i];nrm[p+i]+=w[i]*w[i]}
+  }
+  for(let i=0;i<x.length;i++)out[i]=nrm[i]>1e-3?out[i]/nrm[i]:x[i];
+  return out;
+}
+function ambientCheck(x,fs){
+  // control del ruido ambiente medido con el motor apagado: nivel, ¿suena a motor en marcha? y filtro de graves recomendado
+  let s=0;for(let i=0;i<x.length;i++)s+=x[i]*x[i];
+  const levelDb=10*Math.log10(s/x.length+1e-20);
+  const E=envelope(bandpass(x,fs,80,500),fs,FSE),e=smooth(E.e,12),so=Float64Array.from(e).sort(),med=so[so.length>>1],p=so[Math.floor(so.length*.99)],crest=med>0?p/med:0;
+  return{levelDb,crest,engine:crest>=3.0&&levelDb>-70,loud:levelDb>-38,hp:chooseHp(noiseProfile(x,fs))};
+}
+function chooseHp(prof){
+  // frecuencia de corte de graves según cuánto rumor de baja frecuencia hay en el ambiente (30, 40 o 60 Hz)
+  if(!prof)return 30;const bin=prof.fs/prof.N,m=prof.mean;
+  const avg=(f0,f1)=>{let s=0,c=0;for(let k=Math.max(1,Math.ceil(f0/bin));k<=Math.floor(f1/bin)&&k<m.length;k++){s+=m[k];c++}return c?s/c:0};
+  const lo=avg(12,60),ref=avg(100,1000);if(!(lo>0&&ref>0))return 30;
+  const r=20*Math.log10(lo/ref);return r>12?60:r>6?40:30;
+}
+
+/* ----- orquestador ----- */
+async function analyzeAll(input,onProgress){
+  const tick=()=>new Promise(r=>setTimeout(r,0));
+  const phases=input.phases,P=[];
+  let noiseCleaned=false;
+  if(input.noise&&input.noise.pcm&&input.noise.pcm.length>=input.noise.fs*2){
+    const prof=noiseProfile(input.noise.pcm,input.noise.fs);
+    if(prof){
+      for(let i=0;i<phases.length;i++){const ph=phases[i];if(ph&&ph.pcm&&ph.pcm.length)ph.pcm=denoise(ph.pcm,ph.fs,prof);onProgress&&onProgress(.04*(i+1)/phases.length,"Quitando el ruido ambiente");await tick()}
+      noiseCleaned=true;
+    }
+  }
+  for(let i=0;i<phases.length;i++){
+    const ph=phases[i];
+    if(ph&&ph.pcm&&ph.pcm.length>=ph.fs*(PHCFG[i].kind==="ramp"?3.5:8))P[i]=prepareEnv(ph.pcm,ph.fs);else P[i]=null;
+    onProgress&&onProgress(.04+.21*(i+1)/phases.length,"Preparando señal");await tick();
+  }
+  let n=input.cyl||0,inferred=false;
+  if(!n){const inf=inferCyl(P);n=inf.n;inferred=true;onProgress&&onProgress(.3,"Estimando cilindros");await tick()}
+  const R={n,inferred,phases:[],groups:[],cylFailed:!n,ctx:input.ctx||{},noiseCleaned};
+  for(let i=0;i<phases.length;i++){
+    const cfg=PHCFG[i],ph=phases[i],o={n:i+1,cfg,events:ph&&ph.events||0};
+    if(P[i]&&n){
+      const best=trackPhase(P[i],cfg,n);o.s=summarize(best,cfg);o.lvl={rmsDb:P[i].rmsDb,peakDb:P[i].peakDb,clip:P[i].clip};
+      refineRpm(o,ph,cfg,n);o.tick=tickMetrics(P[i].hf,o.s.rpm,cfg);
+      await tick();o.tones=findTones(ph.pcm,ph.fs);
+    }else if(P[i]){o.s={periodic:false};o.lvl={rmsDb:P[i].rmsDb,peakDb:P[i].peakDb,clip:P[i].clip}}
+    R.phases[i]=P[i]?o:null;
+    onProgress&&onProgress(.3+.7*(i+1)/phases.length,"Analizando fase "+(i+1));await tick();
+  }
+  R.groups=toneGroups(R.phases);
+  R.findings=buildFindings(R);R.verdict=makeVerdict(R);
+  return R;
+}
+/*DSP-END*/
+
+/* ---------- CUENTARREVOLUCIONES EN DIRECTO ---------- */
+const TACH_MAX=3000,TACH_RED=2000;
+let tachTimer=null,tachTarget=0,tachShown=0,tachHist=[],tachLastOk=0,tachCyl=4,tachT=0;
+let tachLearn=[],tachLearned=false,tachIdleRaw=null,tachScale=1,tachLastRaw=null,tachKnown=false;
+function liveRpm(x,fs,n,lo,hi){
+  // ritmo de los pulsos de combustión en la envolvente, sobre los últimos 1,2 s, buscando solo entre lo y hi rpm (en unidades "crudas")
+  let best=null;
+  for(const b of BANDS){
+    const E=envelope(bandpass(x,fs,b.lo,b.hi),fs,FSE),e=smooth(E.e,12);
+    if(e.length<FSE*0.9)return null;
+    const{w,cs}=mkWin(e,0,e.length),r=trackWin(w,cs,E.fsE,n,lo,hi,"first");
+    if(r&&(!best||r.rF>best.rF))best=r;
+  }
+  return best&&best.rF>=0.15?best.rpm:null;
+}
+function setTachText(rpm,note){
+  const el=$("tachread");
+  if(rpm==null){el.textContent="— rpm";el.className="tachread dim"}
+  else{el.textContent=Math.round(rpm/10)*10+" rpm";el.className="tachread"+(rpm>TACH_RED+150?" over":"")}
+  const sel=parseInt($("cyl").value);
+  $("tachnote").textContent=note||(rpm>TACH_RED+150?"¡Baja el régimen: no superes 2.000!":"")||" ";
+}
+function finishLearn(){
+  // al terminar el ralentí: fija la lectura de ralentí y, si no se conocen los cilindros, calibra la escala con un ralentí nominal de 800 rpm
+  if(tachLearned||tachLearn.length<6)return;
+  const s=tachLearn.slice().sort((a,b)=>a-b),t=Math.floor(s.length*.15),core=s.slice(t,s.length-t);
+  tachIdleRaw=median(core);tachLearned=true;
+  tachScale=tachKnown?1:Math.max(.5,Math.min(1.6,800/tachIdleRaw));
+}
+function tachStep(){
+  if(!active||paused||!liveRing)return;
+  if(calibStage){tachHist=[];tachTarget=0;setTachText(null,calibStage==="ready"?"Arranca el motor":"Motor apagado");return}
+  if(!meterLive){tachHist=[];tachTarget=0;setTachText(null,"Micrófono en pausa");return}
+  const x=ringRead(1.2);if(x.length<liveFs*1.0)return;
+  let s=0;for(let i=0;i<x.length;i++)s+=x[i]*x[i];
+  const rms=Math.sqrt(s/x.length),now=performance.now(),learning=idx===0&&!tachLearned;
+  let lo,hi;
+  if(learning){lo=450;hi=tachKnown?1400:2500}
+  else{
+    // ya conoce el ralentí: no busca por debajo de él (evita engancharse a la mitad de la frecuencia al acelerar)
+    lo=Math.max(300,.75*(tachIdleRaw||600));hi=tachKnown?2700:3000/tachScale;
+  }
+  const raw=rms>1e-4?liveRpm(x,liveFs,tachCyl,lo,hi):null;
+  if(raw){
+    tachHist.push(raw);if(tachHist.length>3)tachHist.shift();tachLastOk=now;tachLastRaw=raw;
+    if(learning)tachLearn.push(raw);
+    const m=median(tachHist);
+    let sc=tachScale;
+    if(learning&&!tachKnown&&tachLearn.length>=5)sc=Math.max(.5,Math.min(1.6,800/median(tachLearn)));   // calibración provisional mientras aprende
+    tachTarget=m*sc;
+    let note=null;
+    if(learning)note="Aprendiendo el ralentí… ("+Math.min(tachLearn.length,99)+" lecturas)";
+    else if(tachLearned)note=tachKnown?"Ralentí aprendido: "+Math.round(tachIdleRaw/10)*10+" rpm":"Calibrado con ralentí nominal de 800 rpm (indica los cilindros para mayor precisión)";
+    setTachText(tachTarget,note&&tachTarget<=TACH_RED+150?note:undefined);
+  }else if(now-tachLastOk>1500){tachHist=[];tachLastRaw=null;tachTarget=0;setTachText(null,"Sin señal clara del motor")}
+}
+function startTach(){
+  tachKnown=!!parseInt($("cyl").value);tachCyl=parseInt($("cyl").value)||4;
+  tachTarget=0;tachShown=0;tachHist=[];tachLastOk=0;tachT=performance.now();
+  tachLearn=[];tachLearned=false;tachIdleRaw=null;tachScale=1;tachLastRaw=null;
+  setTachText(null,"");clearInterval(tachTimer);tachTimer=setInterval(tachStep,300);drawTach();
+}
+function stopTach(){clearInterval(tachTimer);tachTimer=null;tachTarget=0}
+function drawTach(){
+  const c=$("tach");if(!c||!c.clientWidth)return;
+  const now=performance.now(),dt=Math.min(.1,(now-tachT)/1000);tachT=now;
+  tachShown+=(tachTarget-tachShown)*Math.min(1,dt*5);
+  sizeCanvas(c);const g=c.getContext("2d");g.setTransform(c.width/300,0,0,c.height/230,0,0);g.clearRect(0,0,300,230);
+  const cx=150,cy=114,R=104,a0=.75*Math.PI,sw=1.5*Math.PI,ang=v=>a0+sw*Math.max(0,Math.min(TACH_MAX,v))/TACH_MAX;
+  const FONT='"Barlow Condensed","Arial Narrow",system-ui,sans-serif';
+  // esfera clara con sombra suave
+  g.save();g.shadowColor="rgba(16,32,48,.22)";g.shadowBlur=14;g.shadowOffsetY=4;
+  const bz=g.createRadialGradient(cx,cy-30,10,cx,cy,R+10);bz.addColorStop(0,"#ffffff");bz.addColorStop(1,"#e8eef5");
+  g.fillStyle=bz;g.beginPath();g.arc(cx,cy,R+8,0,2*Math.PI);g.fill();g.restore();
+  g.strokeStyle="#c5d0dc";g.lineWidth=2;g.beginPath();g.arc(cx,cy,R+8,0,2*Math.PI);g.stroke();
+  g.strokeStyle="#e1e8f0";g.lineWidth=1;g.beginPath();g.arc(cx,cy,R-1,0,2*Math.PI);g.stroke();
+  g.lineCap="butt";g.lineWidth=6;
+  g.strokeStyle="#dc2626";g.beginPath();g.arc(cx,cy,R-4,ang(TACH_RED),ang(TACH_MAX));g.stroke();
+  const cfg=PHCFG[Math.min(idx,PHCFG.length-1)];
+  if(cfg&&cfg.kind==="hold"){g.strokeStyle="#0f9f6e";g.beginPath();g.arc(cx,cy,R-4,ang(cfg.rpm*.97),ang(cfg.rpm*1.03));g.stroke()}
+  g.textAlign="center";g.textBaseline="middle";
+  for(let v=0;v<=TACH_MAX;v+=100){
+    const major=v%500===0,a=ang(v),r1=R-13,r2=major?R-28:R-20;
+    g.strokeStyle=major?"#142030":"#8794a3";g.lineWidth=major?2.4:1;
+    g.beginPath();g.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));g.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a));g.stroke();
+    if(v%1000===0){g.fillStyle="#142030";g.font="700 21px "+FONT;const rl=R-46;g.fillText(String(v/1000),cx+rl*Math.cos(a),cy+rl*Math.sin(a))}
+  }
+  g.fillStyle="#8794a3";g.font="500 11px "+FONT;g.fillText("× 1000 rpm",cx,cy-34);
+  const a=ang(tachShown),ux=Math.cos(a),uy=Math.sin(a),px=-uy,py=ux,tip=R-16,tail=18,hw=3.6;
+  g.save();g.shadowColor="rgba(234,88,12,.4)";g.shadowBlur=7;g.fillStyle="#ea580c";
+  g.beginPath();g.moveTo(cx+ux*tip,cy+uy*tip);g.lineTo(cx+px*hw,cy+py*hw);g.lineTo(cx-ux*tail+px*1.8,cy-uy*tail+py*1.8);g.lineTo(cx-ux*tail-px*1.8,cy-uy*tail-py*1.8);g.lineTo(cx-px*hw,cy-py*hw);g.closePath();g.fill();g.restore();
+  const hb=g.createRadialGradient(cx-2,cy-3,1,cx,cy,10);hb.addColorStop(0,"#ffffff");hb.addColorStop(1,"#d5dde7");
+  g.fillStyle=hb;g.strokeStyle="#ea580c";g.lineWidth=2;g.beginPath();g.arc(cx,cy,8.5,0,2*Math.PI);g.fill();g.stroke();
+}
+
+/* ---------- VOZ ---------- */
+function voiceSkip(){
+  // la voz no está disponible en este dispositivo: se sigue directamente con las instrucciones de la pantalla
+  if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}
+  const cb=voiceCallback;voiceCallback=null;
+  if(cb){$("status").textContent="Sigue las instrucciones de la pantalla.";cb()}
+}
+function manualContinue(){
+  $("status").textContent="Pulsa «Iniciar» cuando estés listo.";
+  if($("voiceContinue"))return;
+  const b=document.createElement("button");b.id="voiceContinue";b.textContent="Iniciar";
+  b.onclick=()=>{b.remove();const cb=voiceCallback;voiceCallback=null;cb&&cb()};
+  $("status").after(b);
+}
+function speak(text,callback){
+  voiceCallback=callback;
+  if($("voiceContinue"))$("voiceContinue").remove();
+  if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}
+  if(window.AndroidBridge&&AndroidBridge.speak){
+    // voz nativa de Android (el WebView no suele traer síntesis de voz propia)
+    window.__ttsEnd=()=>{if(!voiceCallback)return;if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}const cb=voiceCallback;voiceCallback=null;cb()};
+    window.__ttsFail=()=>voiceSkip();
+    voiceTimeout=setTimeout(()=>{if(voiceCallback)voiceSkip()},Math.max(10000,text.length*110+6000));
+    try{AndroidBridge.speak(text);return}catch(e){voiceSkip();return}
+  }
+  if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window)){voiceSkip();return}
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=.92;u.pitch=1;
+    curUtter=u; // referencia global: evita que el navegador pierda el evento onend
+    // Solo onend permite continuar; la grabación nunca se inicia por temporizador.
+    u.onend=()=>{if(u!==curUtter)return;if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}const cb=voiceCallback;voiceCallback=null;cb&&cb()};
+    u.onerror=e=>{if(u!==curUtter)return;if(e&&(e.error==="interrupted"||e.error==="canceled"))return;voiceSkip()};
+    speechSynthesis.speak(u);
+    // Red de seguridad: si onend nunca llega, se pide continuar a mano (no se graba solo).
+    const watch=()=>{voiceTimeout=setTimeout(()=>{if(u!==curUtter||!voiceCallback)return;if(speechSynthesis.speaking||speechSynthesis.paused){watch()}else manualContinue()},3000)};
+    voiceTimeout=setTimeout(()=>{if(u!==curUtter||!voiceCallback)return;if(speechSynthesis.speaking||speechSynthesis.paused){watch()}else manualContinue()},Math.max(8000,text.length*90+6000));
+  }catch(e){voiceSkip()}
+}
+function stopVoice(){
+  try{if("speechSynthesis" in window)speechSynthesis.cancel()}catch(e){}
+  try{if(window.AndroidBridge&&AndroidBridge.stopSpeak)AndroidBridge.stopSpeak()}catch(e){}
+}
+
+/* ---------- AUDIO: filtro + medidor ---------- */
+async function buildAudio(){
+  let tail=null;
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==="suspended")actx.resume();
+  srcNode=actx.createMediaStreamSource(stream);
+  analyser=actx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.6;analyser.minDecibels=-90;analyser.maxDecibels=-20;
+  fbuf=new Uint8Array(analyser.frequencyBinCount);
+  destNode=actx.createMediaStreamDestination();
+  profile={hp:30,lp:8000};   // el corte de graves se ajusta después de medir el ruido ambiente
+  // Dos filtros en cascada por cada corte (≈24 dB/octava)
+  const mk=(type,f)=>{const n=actx.createBiquadFilter();n.type=type;n.frequency.value=f;n.Q.value=.707;return n};
+  const hp1=mk("highpass",profile.hp),hp2=mk("highpass",profile.hp),lp1=mk("lowpass",profile.lp),lp2=mk("lowpass",profile.lp);
+  srcNode.connect(hp1);hp1.connect(hp2);hp2.connect(lp1);lp1.connect(lp2);
+  lp2.connect(analyser);lp2.connect(destNode);tail=lp2;hpNodes=[hp1,hp2];   // el medidor muestra lo que se graba
+  await setupTap(tail);   // copia del audio ya filtrado para el análisis; va silenciada, no suena por el altavoz
+  vuDb=-100;peakHold=-100;lastT=performance.now();
+  cancelAnimationFrame(rafId);rafId=requestAnimationFrame(loop);
+}
+function setMic(on){if(stream)stream.getAudioTracks().forEach(t=>t.enabled=on);meterLive=on}
+function sizeCanvas(c){const d=window.devicePixelRatio||1,w=Math.round(c.clientWidth*d),h=Math.round(c.clientHeight*d);if(c.width!==w||c.height!==h){c.width=w;c.height=h}return d}
+function drawVU(db,pk){
+  const c=$("vu"),g=c.getContext("2d"),d=sizeCanvas(c),W=c.width,H=c.height,bh=H*.68;
+  const x=v=>Math.max(0,Math.min(1,(v+60)/60))*W;
+  g.clearRect(0,0,W,H);
+  g.fillStyle="#e3eaf2";g.fillRect(0,0,W,bh);
+  const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,"#16a37a");gr.addColorStop(.7,"#16a37a");gr.addColorStop(.88,"#f59e0b");gr.addColorStop(1,"#dc2626");
+  g.fillStyle=gr;g.fillRect(0,0,x(db),bh);
+  if(pk>-60){g.fillStyle="#142030";g.fillRect(Math.min(W-3*d,x(pk)-1.5*d),0,3*d,bh)}
+  g.fillStyle="#556473";g.font=(10*d)+"px system-ui";g.textBaseline="bottom";
+  for(let v=-60;v<=0;v+=10){const px=x(v);g.fillRect(px-.5*d,bh,d,4*d);g.textAlign=v===-60?"left":(v===0?"right":"center");g.fillText(String(v),px,H)}
+}
+function drawSpec(live){
+  const c=$("spec"),g=c.getContext("2d"),d=sizeCanvas(c),W=c.width,H=c.height-12*d;
+  g.clearRect(0,0,c.width,c.height);
+  const bars=72,fmin=20,fmax=10000,binHz=actx.sampleRate/analyser.fftSize;
+  if(live)analyser.getByteFrequencyData(fbuf);
+  const bw=W/bars;
+  for(let i=0;i<bars;i++){
+    const f0=fmin*Math.pow(fmax/fmin,i/bars),f1=fmin*Math.pow(fmax/fmin,(i+1)/bars);
+    let b0=Math.floor(f0/binHz),b1=Math.max(b0+1,Math.ceil(f1/binHz)),m=0;
+    if(live)for(let b=b0;b<b1&&b<fbuf.length;b++)if(fbuf[b]>m)m=fbuf[b];
+    const inBand=!profile||(f1>=profile.hp&&f0<=profile.lp);
+    g.fillStyle=inBand?"#2563eb":"#c5d0dc";
+    const h=Math.max(2*d,m/255*H);
+    g.fillRect(i*bw+d,H-h,Math.max(1,bw-2*d),h);
+  }
+  g.fillStyle="#556473";g.font=(10*d)+"px system-ui";g.textBaseline="bottom";
+  [[20,"20 Hz"],[100,"100"],[1000,"1 kHz"],[10000,"10 kHz"]].forEach(([f,t])=>{const px=Math.log(f/fmin)/Math.log(fmax/fmin)*W;g.textAlign=f===20?"left":(f===10000?"right":"center");g.fillText(t,px,c.height)});
+}
+function setFlag(txt,cls){if(lastFlag===txt+cls)return;lastFlag=txt+cls;const el=$("noiseflag");el.textContent=txt||"\u00a0";el.className="noiseflag"+(cls?" "+cls:"")}
+function loop(){
+  rafId=requestAnimationFrame(loop);
+  drawTach();
+  if(!analyser||!actx)return;
+  const now=performance.now(),dt=Math.min(.1,(now-lastT)/1000);lastT=now;
+  let db=-100,pk=-100,rms=0;
+  const live=meterLive&&!paused;
+  if(live){
+    analyser.getFloatTimeDomainData(tbuf);
+    let s=0,mx=0;for(let i=0;i<tbuf.length;i++){const v=tbuf[i];s+=v*v;const a=Math.abs(v);if(a>mx)mx=a}
+    rms=Math.sqrt(s/tbuf.length);db=20*Math.log10(rms+1e-9);pk=20*Math.log10(mx+1e-9);
+  }
+  vuDb=db>vuDb?db:Math.max(db,vuDb-.9);
+  if(live){if(pk>=peakHold||now>peakUntil){peakHold=pk;peakUntil=now+1200}}else peakHold=-100;
+  $("dbread").textContent=live&&vuDb>-99?vuDb.toFixed(0)+" dBFS":"— dBFS";
+  // Detección de ruidos externos puntuales (solo mientras se graba)
+  if(capturing&&!paused&&curStats){
+    const p=rms*rms,elapsed=(Date.now()-startedAt)/1000,warm=elapsed<1.5;
+    curStats.sum+=p;curStats.samples++;if(pk>curStats.peak)curStats.peak=pk;
+    if(ema===null)ema=p;
+    const emaDb=10*Math.log10(ema+1e-12);
+    const jump=!warm&&db>emaDb+9&&db>-55;
+    if(jump){
+      jumpFor+=dt;
+      if(now>coolUntil){curStats.events++}
+      coolUntil=now+900;noiseUntil=now+1500;
+      if(jumpFor>3)ema+=(p-ema)*Math.min(1,dt/1.5);   // cambio sostenido: se adapta
+    }else{
+      jumpFor=0;ema+=(p-ema)*(warm?.25:Math.min(1,dt/2));
+    }
+    if(pk>-1)clipUntil=now+1500;
+  }
+  if(capturing&&now<clipUntil)setFlag("⚠ Señal saturada · aleja el móvil o reduce el volumen de entrada","clip");
+  else if(capturing&&now<noiseUntil)setFlag("⚠ Ruido externo detectado · si se repite, vuelve a hacer la fase","warn");
+  else if(capturing)setFlag("Sin ruidos externos detectados","");
+  else setFlag("","");
+  drawVU(live?vuDb:-100,peakHold);
+  drawSpec(live);
+}
+
+/* ---------- PRUEBA ---------- */
+function vehicleSummary(){
+ const arr=[["Marca",$("make").value],["Modelo",$("model").value],["Año",$("year").value],["Motor",$("engine").value],["Combustible",$("fuel").value],["Cilindros",$("cyl").value],["Kilometraje",$("km").value]];
+ return arr.map(([k,v])=>k+": "+(v||"No indicado")).join(" · ");
+}
+$("vform").addEventListener("submit",ev=>{ev.preventDefault();if(!validateVehicle(true))return;fillChips();showOnly("prep")});
+$("back").onclick=()=>showOnly("setup");
+$("start").onclick=()=>{
+ if(!validateVehicle(false)){showOnly("setup");validateVehicle(true);return}
+ ["setup","prep","results"].forEach(s=>$(s).classList.add("hidden"));$("test").classList.add("active");setStep(3);$("dots").innerHTML=phases.map(()=>"<i></i>").join("");
+ idx=0;files=[];phaseStats=[];active=true;paused=false;capturing=false;meterLive=false;startTach();
+ $("pause").textContent="Pausar";
+ // El AudioContext se crea aquí, dentro del gesto del usuario (necesario en móviles).
+ try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(e){}
+ $("mic").textContent="Micrófono apagado";$("status").classList.remove("recording");$("status").textContent="Escucha la instrucción inicial…";
+ $("timer").textContent="00:"+String(curDur()).padStart(2,"0");$("bar").style.width="0%";
+ // No se solicita ni se captura el micrófono durante esta locución inicial.
+ speak("La prueba va a comenzar. Mantén el vehículo estacionado y no superes las dos mil revoluciones por minuto. Primero mediremos durante seis segundos el ruido ambiente, con el motor apagado: no hables ni muevas el móvil. Después arrancarás el motor y haremos el ralentí: te lo indicaré por voz y, durante esa fase, el programa aprenderá el sonido de tu motor. Después no habrá más voz: sigue las indicaciones de la pantalla, el cuentarrevoluciones y la cuenta atrás. Antes de cada fase habrá una cuenta atrás de diez segundos. Cada fase dura veinte segundos, salvo la aceleración, que dura cinco.",async()=>{
+   if(!active)return;
+   try{
+     stream=await openMic();
+     if(!active){stream.getTracks().forEach(t=>t.stop());stream=null;return}
+     await buildAudio();setMic(false);startCalibration();
+   }catch(e){active=false;$("test").classList.remove("active");showOnly("prep");alert(micErrorText(e))}
+ });
+};
+let micMode=0;
+async function openMic(){
+ // 1.º sin procesado (lo ideal para analizar); si el móvil no lo acepta, se prueban ajustes más sencillos
+ const tries=[{echoCancellation:false,noiseSuppression:false,autoGainControl:false},{echoCancellation:false},true];
+ let last=null;
+ for(let i=0;i<tries.length;i++){
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:tries[i],video:false});micMode=i;return s}
+  catch(e){last=e;if(e&&(e.name==="NotAllowedError"||e.name==="SecurityError"))break;await new Promise(r=>setTimeout(r,500))}
+ }
+ throw last;
+}
+function micErrorText(e){
+ const n=e&&e.name||"";
+ if(n==="NotReadableError")return "El móvil no ha podido iniciar el micrófono. Cierra las apps que puedan estar usándolo (llamadas, grabadora, asistente de voz) y comprueba que el acceso al micrófono no esté desactivado en los ajustes rápidos de privacidad. Después vuelve a intentarlo. ("+n+")";
+ if(n==="NotAllowedError")return "No hay permiso para usar el micrófono. Actívalo en los ajustes de la app e inténtalo de nuevo. ("+n+")";
+ return "No se pudo activar el micrófono. Detalle: "+(n?n+" · ":"")+(e&&e.message||"");
+}
+/* ---------- RUIDO AMBIENTE (antes del ralentí, con el motor apagado) ---------- */
+function calibButtons(list){
+ const box=$("calibBtns");box.innerHTML="";
+ list.forEach(([label,cls,fn])=>{const b=document.createElement("button");b.type="button";b.textContent=label;if(cls)b.className=cls;b.onclick=()=>{box.innerHTML="";fn()};box.appendChild(b)});
+}
+function calibReset(){clearInterval(calibTimer);calibrating=false;calibStage=null;calibChunks=[];const b=$("calibBtns");if(b)b.innerHTML="";$("pause").style.display=""}
+function startCalibration(){
+ if(!active)return;
+ calibStage="measuring";calibrating=true;calibChunks=[];calibPcm=null;ambientInfo=null;
+ $("pause").style.display="none";
+ $("counter").textContent="Preparación";[...$("dots").children].forEach(d=>{d.className=""});
+ $("title").textContent="RUIDO AMBIENTE";
+ $("desc").textContent="Con el motor APAGADO, no hables ni muevas el móvil. El programa mide el ruido del entorno para quitarlo después del análisis.";
+ capturing=false;setOn(false);$("count").classList.add("off");$("status").classList.remove("recording","blink");
+ setMic(true);$("mic").textContent="Midiendo el ruido ambiente…";
+ $("status").textContent="Midiendo el ruido ambiente · "+CAL_SECONDS+" segundos";
+ $("timer").textContent="00:"+String(CAL_SECONDS).padStart(2,"0");$("bar").style.width="0%";
+ calibStart=Date.now();clearInterval(calibTimer);
+ calibTimer=setInterval(()=>{
+  if(!calibrating)return;
+  const el=(Date.now()-calibStart)/1000;
+  $("timer").textContent="00:"+String(Math.max(0,Math.ceil(CAL_SECONDS-el))).padStart(2,"0");$("bar").style.width=Math.min(100,el/CAL_SECONDS*100)+"%";
+  if(el>=CAL_SECONDS){clearInterval(calibTimer);finishCalibration()}
+ },120);
+}
+function finishCalibration(){
+ calibrating=false;setMic(false);
+ const fs=actx?actx.sampleRate:liveFs;let x=joinPcm(calibChunks);calibChunks=[];
+ $("mic").textContent="Micrófono apagado";$("bar").style.width="100%";
+ if(!x||x.length<fs*3){
+  calibStage="decide";$("status").textContent="No se pudo medir el ruido ambiente.";
+  calibButtons([["Medir de nuevo","",startCalibration],["Seguir sin quitar ruido","secondary",()=>{ambientInfo={restado:false};readyStep()}]]);return;
+ }
+ x=x.subarray(Math.round(.8*fs));   // se descarta el primer instante, mientras el micrófono se estabiliza
+ const r=ambientCheck(x,fs);
+ ambientInfo={nivel_dbfs:Math.round(r.levelDb*10)/10,cresta_envolvente:Math.round(r.crest*100)/100,filtro_graves_hz:r.hp,motor_detectado:r.engine,ruidoso:r.loud,restado:true};
+ hpNodes.forEach(n=>{n.frequency.value=r.hp});if(profile)profile.hp=r.hp;
+ const db=Math.round(r.levelDb);
+ if(r.engine){
+  calibStage="decide";$("status").textContent="Parece que el motor está en marcha";
+  $("desc").textContent="Para medir solo el ruido del entorno el motor debe estar APAGADO. Apágalo y mide de nuevo; si ya estaba apagado, puedes seguir sin quitar ruido ambiente.";
+  calibButtons([["Medir de nuevo","",startCalibration],["Seguir sin quitar ruido","secondary",()=>{calibPcm=null;ambientInfo.restado=false;readyStep()}]]);return;
+ }
+ calibPcm=x;calibFs=fs;
+ if(r.loud){
+  calibStage="decide";$("status").textContent="Ruido ambiente alto ("+db+" dBFS)";
+  $("desc").textContent="Hay bastante ruido alrededor. Busca un sitio más silencioso y mide de nuevo, o continúa: se quitará del análisis lo que se pueda.";
+  calibButtons([["Medir de nuevo","",startCalibration],["Continuar igualmente","secondary",readyStep]]);return;
+ }
+ readyStep();
+}
+function readyStep(){
+ calibStage="ready";
+ const m=ambientInfo&&ambientInfo.restado!==false&&ambientInfo.nivel_dbfs!==undefined;
+ $("title").textContent="ARRANCA EL MOTOR";
+ $("desc").textContent=(m?"Ruido ambiente medido ("+Math.round(ambientInfo.nivel_dbfs)+" dBFS): se quitará del análisis y el filtro ya está ajustado. ":"Se seguirá sin quitar ruido ambiente. ")+"Arranca el motor, déjalo al ralentí estable y pulsa «Empezar la prueba».";
+ $("status").textContent=m?"Ruido ambiente listo":"Listo para empezar";
+ $("timer").textContent="00:"+String(DURATION).padStart(2,"0");$("bar").style.width="0%";
+ calibButtons([["Empezar la prueba","",()=>{calibStage=null;$("pause").style.display="";announcePhase()}]]);
+}
+function ambientText(){
+ if(!ambientInfo||ambientInfo.nivel_dbfs===undefined)return "Ruido ambiente: no se restó.";
+ return "Ruido ambiente: "+ambientInfo.nivel_dbfs+" dBFS"+(ambientInfo.restado?", medido antes de la prueba y restado del análisis":", medido pero no restado")+". Filtro de graves automático: "+ambientInfo.filtro_graves_hz+" Hz.";
+}
+function announcePhase(){
+ if(!active)return;if(idx>=phases.length){finish();return}
+ const p=phases[idx];$("counter").textContent=`Fase ${idx+1} de ${phases.length}`;[...$("dots").children].forEach((d,i)=>{d.className=i<idx?"done":i===idx?"active":""});$("title").textContent=p.title;$("desc").textContent=p.desc;
+ $("timer").textContent="00:"+String(curDur()).padStart(2,"0");$("bar").style.width="0%";
+ capturing=false;setOn(false);$("count").classList.add("off");$("status").classList.remove("recording");
+ if(!p.voice){startCapture();return}   // fases sin voz: el micrófono sigue encendido (el cuentarrevoluciones sigue activo) y va directo a la cuenta atrás
+ setMic(false);
+ $("mic").textContent="Micrófono apagado";$("status").textContent="Escucha la instrucción…";$("status").classList.add("blink");
+ // startCapture() solo se invoca desde el callback que se dispara al terminar la voz.
+ speak(p.voice,()=>{if(active&&!paused)startCapture()});
+}
+function startCapture(){
+ if(!active||paused||!stream)return;
+ // Pequeño silencio tras la voz para no grabar su cola ni el eco del altavoz.
+ setMic(true);
+ $("mic").textContent="Micrófono en espera · sin grabar";$("status").textContent="Prepárate…";
+ $("status").classList.remove("blink");
+ clearTimeout(gapTimer);
+ if(window.speechSynthesis&&speechSynthesis.speaking){gapTimer=setTimeout(startCapture,GAP);return}
+ runCountdown(phases[idx]&&phases[idx].voice?COUNT:COUNT_SILENT);
+}
+function runCountdown(n){
+ if(!active||paused)return;
+ const c=$("count");
+ if(n<=0){c.classList.add("off");beginRecording();return}
+ c.textContent=n;c.classList.remove("off");
+ $("status").textContent="Prepárate · la grabación empieza en "+n;
+ gapTimer=setTimeout(()=>runCountdown(n-1),1000);
+}
+function pickMime(){
+ const c=["audio/webm;codecs=opus","audio/webm","audio/mp4"];
+ for(const m of c){if(window.MediaRecorder&&MediaRecorder.isTypeSupported(m))return m}
+ return "";
+}
+function beginRecording(){
+ chunks=[];remaining=curDur();
+ const myIdx=idx,mime=pickMime();
+ try{
+  recorder=new MediaRecorder(destNode.stream,mime?{mimeType:mime}:{});
+  recMime=recorder.mimeType||mime||"audio/webm";
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const ext=recMime.includes("mp4")?"m4a":"webm",type=recMime;
+  recorder.onstop=()=>{if(chunks.length)files.push({name:`fase_${String(myIdx+1).padStart(2,"0")}.${ext}`,blob:new Blob(chunks,{type:type})})};
+  recorder.start();
+ }catch(e){$("status").textContent="No se pudo iniciar el audio: "+e.message;return}
+ curStats={n:myIdx+1,title:phases[myIdx].title,sum:0,samples:0,peak:-100,events:0};
+ ema=null;jumpFor=0;coolUntil=0;noiseUntil=0;clipUntil=0;
+ pcmChunks=[];capturing=true;$("count").classList.add("off");setOn(true);
+ $("mic").textContent="Micrófono activo · grabando";$("status").textContent=`GRABANDO · ${curDur()} segundos`;$("status").classList.add("recording");
+ startedAt=Date.now();startTicker();
+}
+function startTicker(){clearInterval(ticker);ticker=setInterval(tick,120)}
+function tick(){
+ if(paused)return;
+ const elapsed=(Date.now()-startedAt)/1000;
+ remaining=Math.max(0,Math.ceil(curDur()-elapsed));
+ $("timer").textContent="00:"+String(remaining).padStart(2,"0");
+ $("bar").style.width=Math.min(100,elapsed/curDur()*100)+"%";
+ if(elapsed>=curDur()){clearInterval(ticker);endCapture()}
+}
+function saveStats(){
+ if(!curStats)return;
+ const s=curStats;curStats=null;
+ s.pcm=joinPcm(pcmChunks);pcmChunks=null;s.fs=actx?actx.sampleRate:48000;
+ phaseStats.push(s);
+}
+function endCapture(){
+ capturing=false;setOn(false);if(idx===0)finishLearn();
+ if(recorder&&recorder.state!=="inactive")recorder.stop();
+ setMic(false);saveStats();
+ $("mic").textContent="Micrófono apagado";$("status").classList.remove("recording");$("status").textContent="Fase completada · micrófono apagado";idx++;
+ setTimeout(()=>{if(active&&!paused)announcePhase()},500);
+}
+function finish(){
+ const wasCapturing=capturing;
+ active=false;capturing=false;setOn(false);$("count").classList.add("off");$("status").classList.remove("blink");clearInterval(ticker);clearTimeout(gapTimer);if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}
+ if(wasCapturing)saveStats();
+ calibReset();
+ if(recorder&&recorder.state!=="inactive"){try{recorder.stop()}catch(e){}}
+ meterLive=false;stopTach();cancelAnimationFrame(rafId);analyser=null;
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ if(actx){try{actx.close()}catch(e){}actx=null}
+ stopVoice();
+ if($("voiceContinue"))$("voiceContinue").remove();
+ $("test").classList.remove("active");showOnly("results");
+ // onstop de la última fase es asíncrono: se espera un instante antes de contar archivos
+ setTimeout(()=>{
+  $("summary").textContent=`Fases grabadas: ${files.length} de ${phases.length}. Cada fase se graba tras la locución y la cuenta atrás (10 s en las fases sin voz): 20 segundos (5 en la aceleración). ${ambientText()}`;
+  $("vehicleSummary").textContent=vehicleSummary();
+  runAnalysis();
+ },300);
+}
+function saveBlob(blob,name){
+ if(window.AndroidBridge&&AndroidBridge.saveFile){const r=new FileReader();r.onload=()=>{AndroidBridge.saveFile(String(r.result).split(",")[1],name,blob.type||"application/octet-stream")};r.readAsDataURL(blob);return}
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+async function runAnalysis(){
+ $("report").classList.add("off");$("analysisProgress").classList.remove("off");$("analysisProgress").textContent="Analizando el sonido del motor… 0 %";
+ const input={phases:PHCFG.map(()=>null),cyl:parseInt($("cyl").value)||0,ctx:vehicleCtx(),noise:calibPcm?{pcm:calibPcm,fs:calibFs}:null};
+ phaseStats.forEach(s=>{if(s.pcm)input.phases[s.n-1]={pcm:s.pcm,fs:s.fs,events:s.events}});
+ try{
+  const R=await analyzeAll(input,(f,msg)=>{$("analysisProgress").textContent=`${msg}… ${Math.round(f*100)} %`});
+  if(exited)return;lastReport=R;renderReport(R);
+ }catch(e){console.error(e);$("analysisProgress").textContent="No se pudo completar el análisis: "+e.message}
+}
+function renderReport(R){
+ $("analysisProgress").classList.add("off");$("report").classList.remove("off");
+ const v=R.verdict;$("verdict").className="verdict "+v.level;
+ const analyzed=R.phases.filter(p=>p).length,found=R.phases.filter(p=>p&&p.s&&p.s.periodic).length;
+ $("verdict").innerHTML=`<div class="vt">${esc(v.title)}</div><div>${esc(v.text)}</div><div class="vm">Fases con firma del motor reconocible: ${found} de ${PHCFG.length}${analyzed<PHCFG.length?` · fases sin grabar: ${PHCFG.length-analyzed}`:""} · Cilindros: ${R.n?R.n+(R.inferred?" (estimados)":""):"no determinados"}</div>`;
+ const hz=x=>x.toFixed(1).replace(".",","),p0=R.phases[0],s0=p0&&p0.s;
+ if(s0&&s0.periodic&&R.n&&s0.fire){
+  const cf=s0.rpmConf||"media";
+  $("idleCard").innerHTML=`<div class="idle"><div class="big">${Math.round(s0.rpm)}<small>rpm al ralentí</small></div><dl><div><dt>Frecuencia de encendido</dt><dd>${hz(s0.fire)} Hz</dd></div><div><dt>Ciclo del motor</dt><dd>${hz(s0.cycle)} Hz</dd></div><div><dt>Cilindros</dt><dd>${R.n}</dd></div><div><dt>Fiabilidad</dt><dd>${cf}</dd></div></dl><p class="idlenote">Con ${R.n} cilindros se produce un disparo cada ${(120/(s0.rpm*R.n)*1000).toFixed(1).replace(".",",")} ms (rpm × ${R.n} / 120).${s0.rpmSpec?` Comprobación por armónicos del espectro: ${Math.round(s0.rpmSpec)} rpm.`:" Los armónicos del espectro no han permitido una segunda comprobación clara."}</p></div>`;
+ }else $("idleCard").innerHTML="";
+ const lab={bad:"REVISAR",warn:"ATENCIÓN",info:"INFO"},order={bad:0,warn:1,info:2};
+ const fs=R.findings.slice().sort((a,b)=>order[a.sev]-order[b.sev]);
+ $("findings").innerHTML=fs.length?fs.map(f=>`<div class="fnd"><span class="sev ${f.sev}">${lab[f.sev]}</span><b>${esc(f.title)}</b><span class="muted small">${esc(f.detail)}</span></div>`).join(""):`<p class="muted">No se detectó ninguna irregularidad en las señales analizadas.</p>`;
+ const rows=PHCFG.map((cfg,i)=>{
+  const p=R.phases[i],d=phases[i].title.replace("MANTÉN ","").toLowerCase();
+  if(!p)return `<tr><td>${i+1}</td><td>${esc(d)}</td><td colspan="5" class="bad">Fase no grabada</td></tr>`;
+  const s=p.s;
+  if(!s||!s.periodic)return `<tr><td>${i+1}</td><td>${esc(d)}</td><td colspan="5" class="bad">No se reconoce el ritmo del motor</td></tr>`;
+  const meas=cfg.kind==="ramp"?`${Math.round(s.first)} → ${Math.round(s.last)} rpm`:`${Math.round(s.rpm)} rpm${s.fire?`<small>${s.fire.toFixed(1).replace(".",",")} Hz · fiab. ${s.rpmConf||"media"}</small>`:""}`;
+  const off=cfg.kind==="hold"&&Math.abs(s.dev)>THR.onTarget;
+  const est=cfg.kind==="ramp"?"—":`${(s.cv*100).toFixed(1)} %`;
+  const estBad=cfg.kind==="idle"&&s.cv>THR.idleWarn;
+  const q=cfg.kind==="hold"&&Number.isFinite(s.q)?s.q.toFixed(2):"—";
+  const qBad=cfg.kind==="hold"&&Number.isFinite(s.q)&&s.q<THR.qWarn;
+  const tk=p.tick&&p.tick.crest>=THR.crestWarn?(p.tick.sync>=THR.syncMin?"sincronizados":"no sincronizados"):"normal";
+  const tkBad=tk==="sincronizados";
+  const tn=p.tones&&p.tones.length?p.tones.map(t=>Math.round(t.f)+" Hz").join(", "):"—";
+  const sig=s.rF>=.5?"alta":s.rF>=.25?"media":"baja";
+  return `<tr><td>${i+1}</td><td>${esc(d)}<br><small>señal ${sig}</small></td><td class="${off?"bad":""}">${meas}</td><td class="${estBad?"bad":""}">${est}</td><td class="${qBad?"bad":""}">${q}</td><td class="${tkBad?"bad":""}">${tk}</td><td>${tn}</td></tr>`;
+ }).join("");
+ $("statsBox").innerHTML=`<table class="stats"><thead><tr><th>Fase</th><th>Descripción</th><th>Régimen medido</th><th>Oscilación</th><th>Equilibrio</th><th>Chasquidos agudos</th><th>Tonos agudos</th></tr></thead><tbody>${rows}</tbody></table><p class="muted small">Oscilación: variación del régimen (relevante en ralentí). Equilibrio: 1,00 = pulsos uniformes entre cilindros.</p>`;
+}
+$("downloadReport").onclick=()=>{
+ if(!lastReport){alert("Aún no hay informe.");return}
+ const R=lastReport;
+ const out={app:"Motor Acoustic Lab",version:appVersion(),fecha:new Date().toISOString(),
+  vehiculo:{marca:$("make").value,modelo:$("model").value,anio:$("year").value,motor:$("engine").value,combustible:$("fuel").value,cilindros_indicados:$("cyl").value,km:$("km").value},
+  contexto:vehicleCtx(),microfono_modo:["sin procesado","sin cancelación de eco","ajustes del sistema"][micMode],tacometro:{ralenti_aprendido_crudo:tachIdleRaw,escala:tachScale,cilindros_conocidos:tachKnown},ruido_ambiente:ambientInfo,cilindros_usados:{valor:R.n,estimado:R.inferred},veredicto:R.verdict,hallazgos:R.findings,
+  fases:R.phases.map(p=>p&&{fase:p.n,tipo:p.cfg.kind,objetivo_rpm:p.cfg.rpm||null,resultado:p.s,chasquidos:p.tick,tonos:p.tones,nivel:p.lvl,ruidos_externos_avisados:p.events}),
+  tonos_agrupados:R.groups,
+  aviso:"Análisis acústico orientativo con umbrales sin calibrar. No sustituye al diagnóstico de un mecánico."};
+ saveBlob(new Blob([JSON.stringify(out,null,2)],{type:"application/json"}),"informe_motor.json");
+};
+function hardStop(){
+ exited=true;active=false;capturing=false;paused=false;calibReset();
+ clearInterval(ticker);clearTimeout(gapTimer);if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}voiceCallback=null;
+ stopTach();cancelAnimationFrame(rafId);meterLive=false;analyser=null;
+ if(recorder&&recorder.state!=="inactive"){try{recorder.onstop=null;recorder.stop()}catch(e){}}
+ recorder=null;
+ if(stream){try{stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null}
+ if(actx){try{actx.close()}catch(e){}actx=null}
+ stopVoice();
+ if($("voiceContinue"))$("voiceContinue").remove();
+ setOn(false);$("count").classList.add("off");
+ files=[];phaseStats=[];lastReport=null;pcmChunks=null;liveRing=null;
+}
+function wipeAll(){
+ // borra todo lo grabado, el informe y los datos del vehículo
+ files=[];phaseStats=[];lastReport=null;pcmChunks=null;chunks=[];liveRing=null;curStats=null;calibPcm=null;ambientInfo=null;calibChunks=[];
+ tachIdleRaw=null;tachLearn=[];tachLearned=false;tachHist=[];
+ try{localStorage.removeItem("mal_vehiculo_v1");sessionStorage.clear()}catch(e){}
+ $("vform").reset();
+ document.querySelectorAll(".field").forEach(f=>{f.classList.remove("err");const m=f.querySelector(".msg");if(m)m.textContent=""});
+ ["verdict","idleCard","findings","statsBox","vchips"].forEach(id=>{$(id).innerHTML=""});
+ ["summary","vehicleSummary"].forEach(id=>{$(id).textContent=""});
+}
+function exitProgram(){
+ const msg=active?"¿Salir del programa? La prueba en curso se cancelará.":"¿Salir del programa?";
+ if(!confirm(msg))return;
+ hardStop();wipeAll();
+ $("test").classList.remove("active");["setup","prep","results"].forEach(s=>$(s).classList.add("hidden"));
+ $("exitBtn").classList.add("off");$("bye").classList.remove("off");
+ if(window.AndroidBridge&&AndroidBridge.exitApp){AndroidBridge.exitApp();return}
+ try{window.close()}catch(e){}   // solo funciona si la ventana la abrió el propio programa; si no, queda la pantalla de cierre
+}
+$("exitBtn").onclick=exitProgram;
+$("byeBack").onclick=()=>location.reload();
+$("stop").onclick=()=>{if(confirm("¿Finalizar la prueba ahora?"))finish()};
+$("pause").onclick=()=>{
+ if(!active)return;paused=!paused;
+ if(paused){
+  clearInterval(ticker);clearTimeout(gapTimer);setOn(false);$("count").classList.add("off");
+  pausedElapsed=(Date.now()-startedAt)/1000;
+  if(recorder&&recorder.state==="recording")recorder.pause();
+  if("speechSynthesis"in window)speechSynthesis.pause();
+  try{if(window.AndroidBridge&&AndroidBridge.stopSpeak)AndroidBridge.stopSpeak()}catch(e){}
+  $("pause").textContent="Reanudar";$("status").textContent="Prueba pausada";
+  $("mic").textContent=recorder&&recorder.state==="paused"?"Grabación pausada":"Micrófono apagado";
+ }else{
+  $("pause").textContent="Pausar";
+  if(capturing&&recorder&&recorder.state==="paused"){
+    recorder.resume();setOn(true);startedAt=Date.now()-pausedElapsed*1000;
+    $("mic").textContent="Micrófono activo · grabando";$("status").textContent=`GRABANDO · ${curDur()} segundos`;startTicker();
+  }else if(!stream){
+    if(window.AndroidBridge&&AndroidBridge.speak)voiceSkip();else{if("speechSynthesis"in window)speechSynthesis.resume();$("status").textContent="Escucha la instrucción inicial…"}
+  }else announcePhase();   // se repite la instrucción de la fase y la grabación vuelve a empezar tras la voz
+ }
+};
+$("download").onclick=()=>{if(!files.length){alert("No hay grabaciones disponibles.");return}files.sort((a,b)=>a.name.localeCompare(b.name)).forEach((f,i)=>setTimeout(()=>saveBlob(f.blob,f.name),i*350))};
+$("again").onclick=()=>{files=[];phaseStats=[];lastReport=null;calibPcm=null;ambientInfo=null;showOnly("setup")};
+</script>
+</body></html>

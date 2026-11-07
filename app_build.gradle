@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+}
+
+// La versión se cambia SOLO en version.properties (en la raíz del proyecto).
+// VERSION_CODE debe subir en cada entrega: es lo que permite que Android la instale como actualización.
+def versionProps = new Properties()
+rootProject.file('version.properties').withInputStream { versionProps.load(it) }
+
+android {
+    namespace 'es.motoracousticlab.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'es.motoracousticlab.app'
+        minSdk 26
+        targetSdk 34
+        versionCode versionProps['VERSION_CODE'].trim().toInteger()
+        versionName versionProps['VERSION_NAME'].trim()
+    }
+
+    // Clave fija: todas las versiones se firman igual, y por eso Android las acepta como actualización.
+    signingConfigs {
+        mal {
+            storeFile file('mal.keystore')
+            storePassword 'motoracoustic2026'
+            keyAlias 'mal'
+            keyPassword 'motoracoustic2026'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.mal }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.mal
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+}

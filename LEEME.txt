@@ -1,0 +1,15 @@
+MOTOR ACOUSTIC LAB · versión 9.0 · proyecto en formato "todo suelto" (sin carpetas)
+
+Sube TODOS estos archivos a la raíz de tu repositorio de GitHub (Add file > Upload files).
+No hay carpetas: no hace falta crear ninguna. GitHub los ordena solo al compilar.
+
+Después crea a mano UN archivo más: Add file > Create new file, con el nombre exacto
+   .github/workflows/build.yml
+y pega dentro el contenido de texto_del_workflow.txt. Al guardar, empieza la compilación.
+
+Para actualizar a una versión nueva: sube solo los archivos que cambien (normalmente index.html y
+version.properties) con el mismo nombre; sustituyen a los anteriores. La compilación empieza sola.
+El APK sale en Actions > última ejecución > Artifacts > MotorAcousticLab-APK.
+
+La app instalada se actualiza encima si usas siempre el mismo mal.keystore. Guarda una copia.
+Mantén el repositorio PRIVADO (la clave de firma está dentro).
